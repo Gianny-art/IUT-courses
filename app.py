@@ -17,11 +17,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'zip', 'rar', 'jpg', 'jpeg', 'png'}
 
 # --- Connexion à la base de données ---
+
 def get_db_connection():
-    conn = sqlite3.connect(r"D:\IUT-courses\database\iut_courses.db")
+    conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), 'database', 'iut_courses.db'))
     conn.row_factory = sqlite3.Row
     return conn
-
 # --- Droits admin ---
 ADMIN_EMAIL = "giannyfoapa@gmail.com"
 
