@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+<style>
+body, .feed-block { font-family: 'Roboto', Arial, sans-serif; }
+.feed-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;
+}
+.feed-header .gi2-btn {
+    background: linear-gradient(90deg,#007bff,#00c6ff);
+    color: #fff; border: none; border-radius: 25px; padding: 0.7rem 1.5rem;
+    font-weight: bold; font-size: 1.1em; box-shadow: 0 2px 8px #007bff33;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+.feed-header .gi2-btn:hover { background: linear-gradient(90deg,#0056b3,#00b3b3); box-shadow: 0 4px 16px #007bff44; }
+.feed-form {
+    background: #fff; padding: 1.5rem 2rem; border-radius: 16px; box-shadow: 0 2px 16px #00336622;
+    margin-bottom: 2rem; position: relative; overflow: hidden;
+}
+.feed-form textarea { width: 100%; min-height: 60px; border-radius: 8px; padding: 0.7rem; border: 1px solid #e0e0e0; font-size: 1.1em; }
+.feed-form .form-row { display: flex; align-items: center; gap: 1.5rem; margin: 1rem 0; }
+.feed-form input[type="file"] { margin-left: 0.5rem; }
+.feed-form input[type="color"] { border: none; width: 32px; height: 32px; border-radius: 50%; }
+.feed-form .btn-publish {
+    background: linear-gradient(90deg,#28a745,#00c851); color: #fff; border: none; border-radius: 25px;
+    padding: 0.6rem 1.5rem; font-weight: bold; font-size: 1em; box-shadow: 0 2px 8px #28a74533;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+.feed-form .btn-publish:hover { background: linear-gradient(90deg,#218838,#009e60); box-shadow: 0 4px 16px #28a74544; }
+.feed-form .info { font-size: 0.95em; color: #888; margin-top: 0.3rem; }
+.feed-block { max-width: 700px; margin: 2rem auto; }
+.feed-post {
+    background: #fff; border-radius: 16px; box-shadow: 0 2px 16px #00336611;
+    padding: 1.5rem; margin-bottom: 2rem; transition: box-shadow 0.2s, transform 0.2s;
+    position: relative; overflow: hidden;
+    animation: fadeInUp 0.7s;
+}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(30px);} to { opacity:1; transform:translateY(0);} }
+.feed-post:hover { box-shadow: 0 6px 32px #007bff22; transform: translateY(-2px) scale(1.01);}
+.feed-post .post-header { display: flex; align-items: center; gap: 1rem; }
+.feed-post .avatar {
+    width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff33;
+    box-shadow: 0 2px 8px #007bff22;
+}
+.feed-post .post-user { font-weight: bold; font-size: 1.1em; }
+.feed-post .admin-badge {
+    background: #007bff; color: #fff; font-size: 0.8em; border-radius: 8px; padding: 0.2em 0.7em; margin-left: 0.7em;
+}
+.feed-post .post-date { color: #888; font-size: 0.95em; margin-left: auto; }
+.feed-post .post-content { margin: 1rem 0 0.7rem 0; font-size: 1.13em; }
+.feed-post .post-image { max-width: 100%; border-radius: 10px; margin-top: 0.7rem; box-shadow: 0 2px 8px #00336622; }
+.feed-post .btn-profile {
+    background: #fff; color: #007bff; border: 1px solid #007bff; border-radius: 20px;
+    padding: 0.3rem 1.1rem; font-size: 0.98em; font-weight: 500; transition: background 0.2s, color 0.2s;
+}
+.feed-post .btn-profile:hover { background: #007bff; color: #fff; }
+.feed-empty { text-align: center; color: #888; margin: 2rem 0; }
+.post-actions { display: flex; align-items: center; gap: 1.5rem; margin-top: 1rem; }
+.like-btn, .comment-btn {
+    background: none; border: none; color: #888; font-size: 1.1em; cursor: pointer; transition: color 0.2s;
+}
+.like-btn:hover, .comment-btn:hover { color: #007bff; }
+.likes-count { color: #e0245e; font-weight: bold; margin-left: 0.3em; }
+.comments { margin-top: 1rem; }
+.comment { background: #f6f8fa; border-radius: 8px; padding: 0.7em 1em; margin-bottom: 0.5em; }
+.comment .comment-user { font-weight: bold; color: #007bff; }
+.comment-form { display: flex; gap: 0.7em; margin-top: 0.7em; }
+.comment-form input[type="text"] { flex: 1; border-radius: 8px; border: 1px solid #e0e0e0; padding: 0.5em; }
+.comment-form button { border-radius: 8px; border: none; background: #007bff; color: #fff; padding: 0.5em 1.2em; }
+@media (max-width: 600px) {
+    .feed-block, .feed-form { padding: 1rem 0.5rem; }
+    .feed-post { padding: 1rem; }
+}
+/* Modern spinner loader */
+#loaderBar { display:none;justify-content:center;align-items:center;margin-bottom:1.5rem; }
+.lds-roller { display: inline-block; position: relative; width: 64px; height: 64px; }
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5,0,0.5,1) infinite;
+  transform-origin: 32px 32px;
+}
+.lds-roller div:after {
+  content: " "; display: block; position: absolute; width: 7px; height: 7px; border-radius: 50%;
+  background: linear-gradient(90deg,#007bff,#00c6ff,#28a745,#e0245e,#007bff); margin: -4px 0 0 -4px;
+}
+.lds-roller div:nth-child(1) { animation-delay: -0.036s; }
+.lds-roller div:nth-child(1):after { top: 50px; left: 50px; }
+.lds-roller div:nth-child(2) { animation-delay: -0.072s; }
+.lds-roller div:nth-child(2):after { top: 54px; left: 45px; }
+.lds-roller div:nth-child(3) { animation-delay: -0.108s; }
+.lds-roller div:nth-child(3):after { top: 57px; left: 39px; }
+.lds-roller div:nth-child(4) { animation-delay: -0.144s; }
+.lds-roller div:nth-child(4):after { top: 58px; left: 32px; }
+.lds-roller div:nth-child(5) { animation-delay: -0.18s; }
+.lds-roller div:nth-child(5):after { top: 57px; left: 25px; }
+.lds-roller div:nth-child(6) { animation-delay: -0.216s; }
+.lds-roller div:nth-child(6):after { top: 54px; left: 19px; }
+.lds-roller div:nth-child(7) { animation-delay: -0.252s; }
+.lds-roller div:nth-child(7):after { top: 50px; left: 14px; }
+.lds-roller div:nth-child(8) { animation-delay: -0.288s; }
+.lds-roller div:nth-child(8):after { top: 45px; left: 10px; }
+@keyframes lds-roller {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+</style>
+
+<div class="feed-header">
+    <span style="font-size:1.5em;font-weight:bold;color:#007bff;">Mur des étudiants</span>
+    <a href="{{ url_for('gi2_news') }}" class="gi2-btn">Que se passe-t-il en GI2 ?</a>
+</div>
+
+{% if is_admin %}
+    <a href="{{ url_for('admin_payments') }}" class="btn btn-warning" style="margin-bottom:1.5rem;">Valider paiements</a>
+{% endif %}
+
+<div id="loaderBar">
+  <div class="lds-roller">
+    <div></div><div></div><div></div><div></div>
+    <div></div><div></div><div></div><div></div>
+  </div>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="feed-form" id="postForm">
+    <textarea name="content" placeholder="Exprime-toi..." required></textarea>
+    <div class="form-row">
+        <label>Image : <input type="file" name="image" accept="image/*"></label>
+        <label>Couleur de fond :
+            <input type="color" name="bg_color" value="#f6f8fa">
+        </label>
+    </div>
+    <button type="submit" class="btn-publish">Publier</button>
+    <div class="info">Votre post sera visible après validation par l'administrateur.</div>
+</form>
+
+<div class="feed-block">
+    {% for post in posts %}
+        <div class="feed-post" style="background:{{ post['bg_color'] or '#f6f8fa' }};">
+            <div class="post-header">
+                {% if post['photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ post['photo']) }}" alt="Photo" class="avatar">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ post['nom'] }}" alt="Avatar" class="avatar">
+                {% endif %}
+                <span class="post-user">{{ post['nom'] }} {{ post['prenom'] }}</span>
+                {% if post['email'] == 'giannyfoapa@gmail.com' %}
+                    <span class="admin-badge">Admin</span>
+                {% endif %}
+                <span class="post-date">{{ post['created_at'] }}</span>
+                <a href="{{ url_for('profile') }}?user_id={{ post['user_id'] }}" class="btn-profile">Voir le profil</a>
+            </div>
+            <div class="post-content">{{ post['content'] }}</div>
+            {% if post['image'] %}
+                <img src="{{ url_for('static', filename='uploads/' ~ post['image']) }}" alt="Image du post" class="post-image">
+            {% endif %}
+            <div class="post-actions">
+                <!-- Like -->
+                <form method="post" action="{{ url_for('like', post_id=post['id']) }}" style="display:inline;">
+                    <button type="submit" class="like-btn">❤️ J'aime</button>
+                    <span class="likes-count">{{ post['likes'] or 0 }}</span>
+                </form>
+                <!-- Commentaire -->
+                <form method="post" action="{{ url_for('comment', post_id=post['id']) }}" class="comment-form" style="display:inline;">
+                    <input type="text" name="comment" placeholder="Commenter..." required>
+                    <button type="submit" class="comment-btn">💬</button>
+                </form>
+            </div>
+            <!-- Affichage des commentaires -->
+            <div class="comments">
+                {% for comment in post['comments'] %}
+                    <div class="comment">
+                        <span class="comment-user">{{ comment['username'] }}</span> : {{ comment['comment'] }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="feed-empty">Aucun post pour l'instant.</div>
+    {% endfor %}
+</div>
+
+<script>
+document.getElementById('postForm').addEventListener('submit', function(e){
+    document.getElementById('loaderBar').style.display = 'flex';
+});
+</script>
+{% endblock %}

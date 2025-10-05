@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="text-align:center;">
+    <img src="https://1.bp.blogspot.com/-cNfaE8VuOl8/Xw7pY_vBzBI/AAAAAAAAGtk/Ce9Et7agQIUrlv1UeVtc3HRQt7z9pBwWACLcBGAsYHQ/s1600/IUT-FV.jpg" alt="Université de Dschang" style="height:80px;margin-bottom:1rem;">
+</div>
+<h2>Inscription</h2>
+<form method="post" class="register-form">
+    <label>Nom :</label><br>
+    <input type="text" name="nom" required class="input-text"><br>
+    <label>Prénom :</label><br>
+    <input type="text" name="prenom" required class="input-text"><br>
+    <label>Matricule :</label><br>
+    <input type="text" name="matricule" required class="input-text"><br>
+    <label>Email :</label><br>
+    <input type="email" name="email" required class="input-text"><br>
+    <label>Mot de passe :</label><br>
+    <input type="password" name="password" required class="input-text"><br>
+    <label>Filière :</label><br>
+    <select name="filiere" required class="input-text">
+        <option value=""> Choisir ta filière (DUT ou BTS)</option>
+        <option value="Informatique"> Genie Informatique</option>
+        <option value="Génie Civil">Génie Civil</option>
+        <option value="MKA"> Mecatronik Automobile</option>
+        <option value="GEA">Gestion des Entreprises et des Administrations</option>
+        <option value="GE"> Genie Electrique</option>
+        <option value="GB"> Genie Biomedicale</option>
+        <option value="GTEE"> Genie Thermique, Energie et Environnement </option>
+        <option value="ES"> Energie Solaire</option>
+        <option value="EE"> Energie Eolienne</option>
+        <option value="GH"> Energie Hydroélectrique</option>
+        <option value="Bio"> Biomasse</option>
+        <option value="ITE"> Ingenierie des Technologies de l'eau</option>
+        <option value="MSE">Maintenance des Systemes Electroniques</option>
+        <option value="ET">Electrotechnique</option>
+        <option value="Bat">Batiment</option>
+        <option value="GEA">Travaux publics</option>
+        <option value="FC">Froid et Climatisation</option>
+        <option value="RS"> Reseau et Sécurité</option>
+        <option value="CGE">Comptabilité et Gestion des Entreprises</option>
+        <option value="MCV">Marketing, Commerce, Vente(MCV)</option>
+        <option value="BF">Banque et finance</option>
+        <option value="GMH">Gestion et Management Hotelier</option>
+        <option value="ME">Management Evenementiel</option>
+    </select><br><br>
+    <button type="submit" class="btn">S'inscrire</button>
+</form>
+{% endblock %}

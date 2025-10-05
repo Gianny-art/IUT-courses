@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Validation des paiements Orange Money</h2>
+{% if users and users|length > 0 %}
+<table class="table" style="margin:2rem auto;max-width:700px;">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Email</th>
+            <th>Filière</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+        <tr>
+            <td>{{ user['nom'] }}</td>
+            <td>{{ user['prenom'] }}</td>
+            <td>{{ user['email'] }}</td>
+            <td>{{ user['filiere'] }}</td>
+            <td>
+                <form method="post" style="display:inline;">
+                    <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                    <button type="submit" class="btn btn-success">Valider paiement</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="alert alert-info" style="margin:2rem auto;max-width:500px;">Aucun paiement en attente de validation.</div>
+{% endif %}
+{% endblock %}

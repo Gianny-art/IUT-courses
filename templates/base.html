@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>IUT-courses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+   .cool-nav {
+    width: 100%;
+    background: transparent;
+    margin: 0;
+    padding: 0;
+}
+.cool-nav .nav-list {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+}
+.cool-nav .nav-list li {
+    display: flex;
+    align-items: center;
+}
+.cool-nav .nav-list a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #003366;
+    font-weight: 500;
+    padding: 0.3em 1em 0.1em 1em;
+    border-radius: 18px;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    position: relative;
+    font-size: 1.05em;
+}
+.cool-nav .nav-list a .nav-icon {
+    font-size: 1.5em;
+    margin-bottom: 0.1em;
+    transition: transform 0.2s;
+}
+.cool-nav .nav-list a.active, .cool-nav .nav-list a:hover {
+    background: linear-gradient(90deg,#007bff,#00c6ff);
+    color: #fff;
+    transform: translateY(-3px) scale(1.08);
+    box-shadow: 0 4px 16px #007bff22;
+}
+.cool-nav .nav-list a.active .nav-icon,
+.cool-nav .nav-list a:hover .nav-icon {
+    transform: scale(1.2) rotate(-8deg);
+}
+.cool-nav .nav-list a.btn, .cool-nav .nav-list a.btn-secondary, .cool-nav .nav-list a.btn-warning {
+    background: none;
+    color: inherit;
+    font-weight: 500;
+    border: none;
+    box-shadow: none;
+}
+.cool-nav .nav-list a.btn-warning {
+    color: #ffc107;
+}
+.cool-nav .nav-list a.btn-secondary {
+    color: #003366;
+}
+.cool-nav .nav-list a .nav-label {
+    font-size: 0.95em;
+    margin-top: 0.1em;
+    letter-spacing: 0.01em;
+}
+@media (max-width: 700px) {
+    .cool-nav {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        background: rgba(255,255,255,0.97);
+        box-shadow: 0 -2px 16px #00336622;
+        z-index: 100;
+        border-radius: 18px 18px 0 0;
+        padding: 0.2em 0;
+    }
+    .cool-nav .nav-list {
+        justify-content: space-around;
+        gap: 0.2rem;
+    }
+    .cool-nav .nav-list a {
+        font-size: 1em;
+        padding: 0.2em 0.7em 0.1em 0.7em;
+        border-radius: 14px;
+    }
+    .main-header {
+        padding-bottom: 3.5em;
+    }
+}
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-flex">
+            <div class="logo">
+                <img src="https://1.bp.blogspot.com/-cNfaE8VuOl8/Xw7pY_vBzBI/AAAAAAAAGtk/Ce9Et7agQIUrlv1UeVtc3HRQt7z9pBwWACLcBGAsYHQ/s1600/IUT-FV.jpg" alt="IUT Logo" height="48" style="vertical-align:middle;">
+                <span class="site-title">IUT e-Learning</span>
+            </div>
+           <nav class="main-nav cool-nav">
+    <ul class="nav-list">
+        <li>
+            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Accueil</span>
+            </a>
+        </li>
+        {% if session.get('username') %}
+            <li>
+                <a href="{{ url_for('courses') }}" class="{% if request.endpoint == 'courses' %}active{% endif %}">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-label">Cours</span>
+                </a>
+            </li>
+        {% endif %}
+        {% if session.get("username") %}
+            <li>
+                <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">Profil</span>
+                </a>
+            </li>
+            {% if session.get("user_email") == "giannyfoapa@gmail.com" %}
+                <li>
+                    <a href="{{ url_for('admin_payments') }}" class="btn btn-warning">
+                        <span class="nav-icon">💳</span>
+                        <span class="nav-label">Valider</span>
+                    </a>
+                </li>
+            {% endif %}
+        {% else %}
+            <li>
+                <a href="{{ url_for('login') }}" class="btn">
+                    <span class="nav-icon">🔑</span>
+                    <span class="nav-label">Connexion</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('register') }}" class="btn btn-secondary">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Inscription</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+        </div>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 IUT e-Learning. Tous droits réservés.</p>
+        </div>
+    </footer>
+<script>
+
+// Animation sur les boutons : effet d'ondulation
+document.querySelectorAll('.btn, .btn-secondary').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        const circle = document.createElement('span');
+        circle.className = 'ripple';
+        circle.style.left = (e.clientX - btn.getBoundingClientRect().left) + 'px';
+        circle.style.top = (e.clientY - btn.getBoundingClientRect().top) + 'px';
+        btn.appendChild(circle);
+        setTimeout(() => circle.remove(), 600);
+    });
+});
+// Carrousel automatique pour la galerie des étudiants primés
+const gallery = document.querySelector('.awards-gallery');
+if (gallery && gallery.children.length > 2) {
+    let idx = 0;
+    setInterval(() => {
+        for (let i = 0; i < gallery.children.length; i++) {
+            gallery.children[i].style.display = 'none';
+        }
+        gallery.children[idx % gallery.children.length].style.display = 'block';
+        idx++;
+    }, 2200);
+}
+</script>
+</body>
+</html>

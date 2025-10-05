@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-section">
+	<img src="https://1.bp.blogspot.com/-cNfaE8VuOl8/Xw7pY_vBzBI/AAAAAAAAGtk/Ce9Et7agQIUrlv1UeVtc3HRQt7z9pBwWACLcBGAsYHQ/s1600/IUT-FV.jpg" alt="Université de Dschang" class="hero-logo">
+	<h1 class="hero-title">Bienvenue sur la plateforme e-learning de l'IUT de Dschang</h1>
+	<p class="hero-desc">Accédez à vos cours, forums, et ressources numériques dans un espace moderne, sécurisé et collaboratif.</p>
+	<div class="hero-actions">
+		<a href="{{ url_for('login') }}" class="btn">Connexion</a>
+		<a href="{{ url_for('register') }}" class="btn btn-secondary">Inscription</a>
+	</div>
+</div>
+
+<section class="partners-section">
+	<h2>Nos partenaires</h2>
+	<div class="partners-logos">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/IUT_logo.png" alt="IUT" title="IUT" class="partner-img">
+		<img src="https://www.univ-dschang.org/wp-content/uploads/2017/10/logo-enspd.png" alt="ENSPD" title="ENSPD" class="partner-img">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Logo_CNRS.svg" alt="CNRS" title="CNRS" class="partner-img">
+		<img src="https://upload.wikimedia.org/wikipedia/commons/2/2b/Logo_AUF.svg" alt="AUF" title="AUF" class="partner-img">
+	</div>
+</section>
+
+<section class="awards-section">
+	<h2>Nos étudiants primés</h2>
+	<div class="awards-gallery">
+		<img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=facearea&w=256&q=80&facepad=2" alt="Lauréat 1" class="award-img">
+		<img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=facearea&w=256&q=80&facepad=2" alt="Lauréat 2" class="award-img">
+		<img src="https://images.unsplash.com/photo-1519340333755-c6e2a6a1b49a?auto=format&fit=facearea&w=256&q=80&facepad=2" alt="Lauréat 3" class="award-img">
+	</div>
+	<p class="awards-desc">Fiers de nos talents et de leur réussite à l'international !</p>
+</section>
+<style>
+.hero-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 1.2rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+@media (max-width: 600px) {
+    .hero-actions {
+        flex-direction: column;
+        gap: 0.7rem;
+        align-items: center;
+    }
+    .hero-actions a {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

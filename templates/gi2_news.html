@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Actualités GI2</h2>
+<div class="gi2-news-list" style="max-width:700px;margin:2rem auto;">
+    {% if is_admin %}
+        <a href="{{ url_for('publish_gi2_news') }}" class="btn" style="margin-bottom:1rem;">Publier une actu</a>
+    {% endif %}
+    {% for news in news %}
+        <div class="gi2-news-item" style="background:#f6f8fa;border-radius:10px;padding:1.2rem;margin-bottom:1.5rem;box-shadow:0 2px 8px #00336611;">
+            <h3 style="color:#003366;">{{ news['title'] }}</h3>
+            <p>{{ news['content'] }}</p>
+            {% if news['image'] %}
+                <img src="{{ url_for('static', filename='uploads/' ~ news['image']) }}" alt="Image actu" style="max-width:100%;border-radius:8px;margin-top:0.7rem;">
+            {% endif %}
+            <div style="color:#888;font-size:0.95em;margin-top:0.5rem;">Publié le {{ news['created_at'] }}</div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Aucune actualité pour le moment.</div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Validation des publications</h2>
+<div class="admin-posts-block" style="max-width:700px;margin:2rem auto;">
+    {% if posts %}
+        <table class="table" style="width:100%;background:#fff;border-radius:10px;box-shadow:0 2px 12px #00336622;">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Contenu</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for post in posts %}
+                <tr>
+                    <td>{{ post['nom'] }}</td>
+                    <td>{{ post['prenom'] }}</td>
+                    <td>{{ post['content'] }}</td>
+                    <td>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="post_id" value="{{ post['id'] }}">
+                            <button type="submit" class="btn btn-success">Valider</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info" style="margin:2rem auto;">Aucun post à valider.</div>
+    {% endif %}
+</div>
+{% endblock %}

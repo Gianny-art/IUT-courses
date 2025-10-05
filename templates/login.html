@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="text-align:center;">
+    <img src="https://upload.wikimedia.org/wikipedia/fr/2/2e/Logo_Universit%C3%A9_de_Dschang.png" alt="Université de Dschang" style="height:80px;margin-bottom:1rem;">
+</div>
+<h2>Connexion</h2>
+<form method="post" class="login-form">
+    <label>Email :</label><br>
+    <input type="email" name="email" required class="input-text"><br>
+    <label>Mot de passe :</label><br>
+    <input type="password" name="password" required class="input-text"><br>
+    <button type="submit" class="btn">Se connecter</button>
+</form>
+{% endblock %}

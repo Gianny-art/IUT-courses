@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Forum de l'unité : {{ unite['nom'] }}</h2>
+<div class="forum-block">
+    <div class="forum-messages" id="messages">
+        {% for post in posts %}
+            <div class="forum-message">
+                <strong>{{ post['username'] }}</strong> <span class="forum-date">({{ post['created_at'] }})</span><br>
+                {{ post['content'] }}
+            </div>
+        {% else %}
+            <p>Aucun message pour cette unité.</p>
+        {% endfor %}
+    </div>
+    <form id="chat-form" class="forum-form" autocomplete="off">
+        <textarea id="chat-input" rows="2" placeholder="Votre message..." required></textarea>
+        <button type="submit" class="btn">Envoyer</button>
+    </form>
+</div>
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script>
+var unite_id = JSON.parse("{{ unite_id|tojson|safe }}");
+var user_id = JSON.parse("{{ session['user_id']|tojson|safe }}");
+var username = JSON.parse("{{ session['username']|tojson|safe }}");
+const socket = io('/chat');
+socket.emit('join', { unite_id, username });
+
+socket.on('receive_message', function(data) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'forum-message';
+    msgDiv.innerHTML = `<strong>${data.username}</strong> <span class='forum-date'>(maintenant)</span><br>${data.content}`;
+    document.getElementById('messages').appendChild(msgDiv);
+    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+});
+
+document.getElementById('chat-form').onsubmit = function(e) {
+    e.preventDefault();
+    const content = document.getElementById('chat-input').value.trim();
+    if (content) {
+        socket.emit('send_message', { unite_id, user_id, username, content });
+        document.getElementById('chat-input').value = '';
+    }
+};
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Mon profil</h2>
+<div class="profile-block">
+    <form method="post" class="profile-form" enctype="multipart/form-data">
+        <div class="profile-photo">
+            {% if user['photo'] %}
+                <img src="{{ url_for('static', filename='uploads/' ~ user['photo']) }}" alt="Photo de profil" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ user['nom'] }}" alt="Avatar" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+            {% endif %}
+        </div>
+        <label>Photo de profil (upload) :</label>
+        <input type="file" name="photo_file" accept="image/*"><br>
+        <label>Nom d'utilisateur :</label>
+        <input type="text" value="{{ user['nom'] }}" disabled><br>
+        <label>Filière :</label>
+        <input type="text" value="{{ user['filiere'] }}" disabled><br>
+        <label>Âge :</label>
+        <input type="number" name="age" value="{{ user['age'] or '' }}" min="15" max="99"><br>
+        <label>Sports favoris :</label>
+        <input type="text" name="sports" value="{{ user['sports'] or '' }}"><br>
+        <label>Autres centres d'intérêt :</label>
+        <input type="text" name="autres" value="{{ user['autres'] or '' }}"><br>
+        <label>En couple ?</label>
+        <select name="en_couple" id="en_couple" onchange="showWhatsappField()">
+            <option value="non" {% if user['en_couple'] == "non" %}selected{% endif %}>Non</option>
+            <option value="oui" {% if user['en_couple'] == "oui" %}selected{% endif %}>Oui</option>
+        </select>
+        <div id="whatsapp_field" style="display: {% if user['en_couple'] == 'oui' %}block{% else %}none{% endif %};">
+            <label>Numéro WhatsApp :</label>
+            <input type="text" name="whatsapp" value="{{ user['whatsapp'] or '' }}">
+        </div>
+        <button type="submit" class="btn">Mettre à jour</button>
+    </form> <br><br>
+    <div style="margin-top:2rem;">
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Déconnexion</a>
+    </div>
+</div>
+<script>
+function showWhatsappField() {
+    var select = document.getElementById('en_couple');
+    var field = document.getElementById('whatsapp_field');
+    if (select.value === 'non') {
+        field.style.display = 'block';
+    } else {
+        field.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

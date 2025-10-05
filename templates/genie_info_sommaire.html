@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="gi-layout">
+    <nav class="gi-sidebar">
+        <h3>Niveaux</h3>
+        <ul>
+            <li>
+                <span class="gi-semestre-toggle" onclick="toggleMenu('sem1')">&#9654; Semestre 1</span>
+                <ul id="sem1" class="gi-semestre-list">
+                    <li onclick="showContent('ue1')">UE Fondamentale 1</li>
+                    <li onclick="showContent('ue2')">UE Transversale 1</li>
+                    <li onclick="showContent('ue3')">UE Professionnelle 1</li>
+                    <li onclick="showContent('ue4')">UE Professionnelle 2</li>
+                    <li onclick="showContent('ue5')">UE Professionnelle 3</li>
+                    <li onclick="showContent('ue6')">UE Fondamentale 2</li>
+                </ul>
+            </li>
+            <li>
+                <span class="gi-semestre-toggle" onclick="toggleMenu('sem2')">&#9654; Semestre 2</span>
+                <ul id="sem2" class="gi-semestre-list">
+                    <li onclick="showContent('ue7')">UE Fondamentale 3</li>
+                    <li onclick="showContent('ue8')">UE Transversale 2</li>
+                    <li onclick="showContent('ue9')">UE Professionnelle 4</li>
+                    <li onclick="showContent('ue10')">UE Professionnelle 5</li>
+                    <li onclick="showContent('ue11')">UE Professionnelle 6</li>
+                </ul>
+            </li>
+            <li>
+                <span class="gi-semestre-toggle" onclick="toggleMenu('sem3')">&#9654; Semestre 3</span>
+                <ul id="sem3" class="gi-semestre-list">
+                    <li onclick="showContent('ue12')">UE Fondamentale 4</li>
+                    <li onclick="showContent('ue13')">UE Transversale 3</li>
+                    <li onclick="showContent('ue14')">UE Professionnelle 7</li>
+                    <li onclick="showContent('ue15')">UE Professionnelle 8</li>
+                </ul>
+            </li>
+            <li>
+                <span class="gi-semestre-toggle" onclick="toggleMenu('sem4')">&#9654; Semestre 4</span>
+                <ul id="sem4" class="gi-semestre-list">
+                    <li onclick="showContent('ue16')">UE Fondamentale 5</li>
+                    <li onclick="showContent('ue17')">UE Transversale 4</li>
+                    <li onclick="showContent('ue18')">UE Professionnelle 9</li>
+                    <li onclick="showContent('ue19')">UE Professionnelle 10</li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <main class="gi-content">
+        <div id="ue1" class="gi-ue-content gi-active">
+            <h2>Analyse mathématique et Algèbre linéaire</h2>
+            <div class="gi-ue-meta">
+                <span><b>Professeur :</b> Dr. Tchouankem</span>
+                <span><b>Crédits :</b> 6</span>
+            </div>
+            <p class="gi-ue-desc">Cette unité couvre l'analyse mathématique, l'algèbre linéaire et leurs applications pour l'informatique.</p>
+            <div class="gi-ue-cours">
+                <h4>Cours</h4>
+                <ul>
+                    <li>Analyse Mathématique (AMN1111)</li>
+                    <li>Algèbre Linéaire (ALL1112)</li>
+                </ul>
+            </div>
+            <div class="gi-ue-td">
+                <h4>Travaux Dirigés</h4>
+                <ul>
+                    <li>TD 1 : Suites et séries</li>
+                    <li>TD 2 : Espaces vectoriels</li>
+                </ul>
+            </div>
+            <div class="gi-ue-actions">
+                <a href="#" class="btn">Forum</a>
+            </div>
+        </div>
+        <!-- Ajoute ici d'autres div .gi-ue-content pour chaque UE -->
+        <div id="gi-assistant-ia" class="gi-assistant-ia">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="Assistant IA" style="height: 48px; border-radius: 50%;">
+            <span>Assistant IA : Posez vos questions ici !</span>
+            <input type="text" placeholder="Votre question..." class="input-text" style="width: 60%; margin: 0 1rem;">
+            <button class="btn">Envoyer</button>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleMenu(id) {
+    const ul = document.getElementById(id);
+    if (ul.style.display === 'block') {
+        ul.style.display = 'none';
+    } else {
+        ul.style.display = 'block';
+    }
+}
+function showContent(id) {
+    document.querySelectorAll('.gi-ue-content').forEach(div => div.classList.remove('gi-active'));
+    document.getElementById(id).classList.add('gi-active');
+}
+</script>
+{% endblock %}

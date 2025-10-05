@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+{% if filiere and filiere|lower in ['genie informatique', 'informatique', 'gin', 'gi'] %}
+<div class="gi-layout">
+    <nav class="gi-sidebar">
+        <h3>Semestres</h3>
+        <ul>
+            {% for semestre in semestres %}
+            <li>
+                <span class="gi-semestre-toggle" onclick="toggleMenu('sem{{ semestre.id }}')">&#9654; {{ semestre.nom }}</span>
+                <ul id="sem{{ semestre.id }}" class="gi-semestre-list">
+                    {% for unite in semestre.unites %}
+                    <li onclick="showContent('ue{{ unite.id }}')">{{ unite.nom }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <main class="gi-content">
+        {% set active_set = false %}
+        {% for semestre in semestres %}
+            {% for unite in semestre.unites %}
+            <div id="ue{{ unite.id }}" class="gi-ue-content{% if not active_set %} gi-active{% set active_set = true %}{% endif %}">
+                <h2>{{ unite.nom }}</h2>
+                <div class="gi-ue-meta">
+                    <span><b>Professeur :</b> {{ unite.professeur }}</span>
+                    <span><b>Crédits :</b> {{ unite.credits }}</span>
+                </div>
+                <p class="gi-ue-desc">{{ unite.description }}</p>
+                <div class="gi-ue-cours">
+                    <h4>Cours</h4>
+                    <ul>
+                        {% for cours in unite.cours %}
+                        <li>{{ cours }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="gi-ue-td">
+                    <h4>Travaux Dirigés</h4>
+                    <ul>
+                        {% for td in unite.td %}
+                        <li>{{ td }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="gi-ue-actions">
+                    <a href="/assistant/unit/{{ unite.id }}" class="btn">Forum</a>
+                    <form action="/upload/{{ unite.id }}" method="post" enctype="multipart/form-data" style="display:inline-block;margin-left:1rem;">
+                        <input type="file" name="file" style="display:inline-block;">
+                        <button type="submit" class="btn btn-secondary">Charger un document</button>
+                    </form>
+                    {% if unite.documents %}
+                    <div class="gi-ue-docs">
+                        <h5>Documents :</h5>
+                        <ul>
+                        {% for doc in unite.documents %}
+                            <li><a href="{{ url_for('uploaded_file', filename=doc.filename) }}" target="_blank">{{ doc.original_name }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% endfor %}
+       
+        <script>
+        function sendToForum() {
+            // Trouver l'unité actuellement affichée
+            var active = document.querySelector('.gi-ue-content.gi-active');
+            if (!active) return;
+            var uniteId = active.id.replace('ue','');
+            var question = document.getElementById('gi-ai-question').value.trim();
+            if (!question) return;
+            // Redirige vers la page assistant IA de l'unité avec le prompt en GET
+            window.location.href = '/assistant/unit/' + uniteId + '?prompt=' + encodeURIComponent(question);
+        }
+        // Permet d'envoyer avec Entrée
+        document.getElementById('gi-ai-question').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendToForum();
+            }
+        });
+        </script>
+    </main>
+</div>
+<script>
+function toggleMenu(id) {
+    const ul = document.getElementById(id);
+    if (ul.style.display === 'block') {
+        ul.style.display = 'none';
+    } else {
+        ul.style.display = 'block';
+    }
+}
+function showContent(id) {
+    document.querySelectorAll('.gi-ue-content').forEach(div => div.classList.remove('gi-active'));
+    document.getElementById(id).classList.add('gi-active');
+    // Scroll to the selected unit for better UX
+    setTimeout(function() {
+        document.getElementById(id).scrollIntoView({behavior: 'smooth', block: 'start'});
+    }, 100);
+}
+// Masquer toutes les unités au chargement sauf la première
+window.addEventListener('DOMContentLoaded', function() {
+    var all = document.querySelectorAll('.gi-ue-content');
+    all.forEach(function(div, idx) {
+        if(idx === 0) div.classList.add('gi-active');
+        else div.classList.remove('gi-active');
+    });
+});
+// Désactiver les captures d'écran et le clic droit
+document.addEventListener('keydown', function(e) {
+    if (e.key === "PrintScreen") {
+        e.preventDefault();
+        alert("La capture d'écran est désactivée sur cette page.");
+    }
+});
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    });
+</script>
+<style>
+body {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    user-select: none;}
+
+.courses-block { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px #00336611; padding: 2rem 1.5rem; margin: 2rem 0; }
+.semestre-title { color: #007bff; font-size: 1.2em; margin-top: 1.5rem; }
+.unite-block { margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+.unite-title { font-weight: bold; color: #003366; margin-bottom: 0.5rem; }
+.cours-list, .td-list, .docs-list { margin: 0.5rem 0 0.5rem 1.2rem; }
+.docs-list a { color: #007bff; text-decoration: underline; }
+@media (max-width: 600px) {
+    .courses-block { padding: 1rem 0.3rem; border-radius: 10px; }
+    .semestre-title { font-size: 1.05em; }
+    .unite-title { font-size: 1em; }    
+}
+</style>
+{% elif filiere %}
+
+{% else %}
+<div class="alert alert-info" style="margin:2rem auto;max-width:600px;text-align:center;">Aucun cours disponible pour votre filière.</div>
+{% endif %}
+{% endblock %}

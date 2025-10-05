@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Publier une actualité GI2</h2>
+<form method="post" enctype="multipart/form-data" class="publish-form" style="max-width:500px;margin:2rem auto;background:#fff;padding:2rem;border-radius:12px;box-shadow:0 2px 12px #00336622;">
+    <label>Titre :</label>
+    <input type="text" name="title" required class="input-text">
+    <label>Contenu :</label>
+    <textarea name="content" rows="5" required class="input-text"></textarea>
+    <label>Image (optionnel) :</label>
+    <input type="file" name="image" accept="image/*">
+    <button type="submit" class="btn">Publier</button>
+</form>
+{% endblock %}
