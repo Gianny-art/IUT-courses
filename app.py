@@ -370,11 +370,17 @@ def admin_payments():
 # --- Profil utilisateur ---
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
+    # Si un user_id est passé dans l'URL, on affiche ce profil
+    user_id = request.args.get("user_id")
+    if not user_id:
+        # Sinon, on affiche le profil de la session (l'utilisateur connecté)
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        user_id = session["user_id"]
     conn = get_db_connection()
-    user = conn.execute("SELECT * FROM users WHERE id=?", (session["user_id"],)).fetchone()
-    if request.method == "POST":
+    user = conn.execute("SELECT * FROM users WHERE id=?", (user_id,)).fetchone()
+    # Seul l'utilisateur connecté peut modifier SON profil
+    if request.method == "POST" and str(user_id) == str(session.get("user_id")):
         age = request.form.get("age")
         sports = request.form.get("sports")
         autres = request.form.get("autres")
@@ -394,7 +400,6 @@ def profile():
         user = conn.execute("SELECT * FROM users WHERE id=?", (session["user_id"],)).fetchone()
     conn.close()
     return render_template("profile.html", user=user)
-
 # --- Upload de documents pour une unité ---
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
