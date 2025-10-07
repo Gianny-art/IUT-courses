@@ -339,7 +339,7 @@ def pay():
         try:
             amount = request.form.get("amount")
             try:
-                amount = int(amount)
+                amount = int(amount)    
             except (TypeError, ValueError):
                 amount = 0
             if amount >= 2000:
