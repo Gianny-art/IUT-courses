@@ -160,60 +160,27 @@ def assistant_unit(unite_id):
     return render_template("assistant_unit.html", unite=unite, response=response, question=question)
 
 # --- Login ---
-# ...existing code...
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """
-    Route de connexion.
-    - Vérifie l'email/mot de passe dans la table users.
-    - Remplit session['user_id'], session['user_email'], session['user_name'].
-    - Émet une notification site via SocketIO (namespace /notifications).
-    """
-    error = None
     if request.method == "POST":
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-
+        email = request.form["email"]
+        password = request.form["password"]
         conn = get_db_connection()
-        user_row = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+        user = conn.execute(
+            "SELECT * FROM users WHERE email=? AND password=?",
+            (email, password)
+        ).fetchone()
         conn.close()
-
-        # Remplacez check_password par votre fonction de vérification (bcrypt, werkzeug, ...)
-        try:
-            valid = check_password(password, user_row["password"]) if user_row else False
-        except NameError:
-            # si check_password n'existe pas encore, fallback (dangereux si mots de passe en clair)
-            valid = bool(user_row and password == user_row["password"])
-
-        if user_row and valid:
-            session["user_id"] = user_row["id"]
-            session["user_email"] = user_row["email"]
-            session["user_name"] = user_row.get("nom") if isinstance(user_row, dict) else user_row["nom"]
-
-            # Notification site (Socket.IO) -- reçue par admins qui écoutent /notifications
-            try:
-                socketio.emit("site_notification", {
-                    "type": "login",
-                    "message": f"Utilisateur connecté : {session.get('user_name') or session.get('user_email')}",
-                    "user_id": session["user_id"],
-                    "timestamp": datetime.now().isoformat()
-                }, namespace="/notifications")
-            except Exception:
-                pass
-
+        if user:
+            session["user_id"] = user["id"]
+            session["username"] = user["nom"]
+            session["user_email"] = user["email"]
             return redirect(url_for("index"))
+        else:
+            return "Identifiants incorrects."
+    return render_template("login.html")
 
-        error = "Email ou mot de passe invalide."
-
-        # si requête AJAX, renvoyer JSON
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"ok": False, "error": error}), 401
-
-    return render_template("login.html", error=error)
-
-# ...existing code...
-
+ 
 # --- Inscription ---
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -399,53 +366,7 @@ def admin_payments():
     conn.close()
     return render_template("admin_payments.html", users=users)
 
-# ...existing code...
-@app.route("/admin/payments/validate/<int:payment_id>", methods=["POST"])
-@admin_required
-def validate_payment(payment_id):
-    """
-    Valide un paiement (appelé depuis l'interface admin).
-    Met à jour la table users/payments et émet une notification site via SocketIO.
-    """
-    conn = get_db_connection()
-    try:
-        # Exemple : si vous stockez les paiements dans payments
-        payment = conn.execute("SELECT * FROM payments WHERE id = ?", (payment_id,)).fetchone()
-        if payment:
-            conn.execute("""
-                UPDATE payments
-                SET status = ?, validated_by = ?, validated_at = ?
-                WHERE id = ?
-            """, ("validated", session.get("user_id"), datetime.now().isoformat(), payment_id))
-            # Optionnel : marquer l'utilisateur comme payé
-            conn.execute("UPDATE users SET has_paid=1, pending_payment=0 WHERE id = ?", (payment["user_id"],))
-            conn.commit()
-        else:
-            # Si vous n'avez pas de table payments, adaptez : update users WHERE id = ?
-            conn.close()
-            return "Paiement introuvable", 404
 
-        # Émettre notification site (admins connectés)
-        try:
-            socketio.emit("site_notification", {
-                "type": "payment_validated",
-                "message": f"Paiement validé (id: {payment_id})",
-                "payment_id": payment_id,
-                "timestamp": datetime.now().isoformat()
-            }, namespace="/notifications")
-        except Exception:
-            pass
-
-        # Support AJAX
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"ok": True, "payment_id": payment_id})
-        return redirect(url_for("admin_payments"))
-    except Exception as e:
-        conn.rollback()
-        raise e
-    finally:
-        conn.close()
-# ...existing code...
 
 # --- Profil utilisateur ---
 @app.route("/profile", methods=["GET", "POST"])
