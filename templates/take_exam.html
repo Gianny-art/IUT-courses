@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="exam-container">
+    <h1>{{ exam.titre }}</h1>
+    <p>Unité : {{ exam.unite_nom }}</p>
+    <div id="timer" class="timer">Temps restant : {{ exam.duree }}:00</div>
+
+    <form method="POST" id="examForm">
+        {% for question in questions %}
+        <div class="question">
+            <h3>Question {{ loop.index }}</h3>
+            <p>{{ question.question }}</p>
+            <input type="text" name="q_{{ question.id }}" required>
+        </div>
+        {% endfor %}
+        <div class="submit-container">
+            <button type="submit" class="submit-btn">Soumettre l'examen</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Rendre les données de l'examen disponibles en JS
+    const examData = {{ exam|tojson | safe }};
+
+    document.getElementById('examForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        try {
+            const formData = new FormData(this);
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+            
+            // Prepare WhatsApp message en utilisant examData
+            let message = `🎓 Résultats de l'examen: ${examData.titre}\n`;
+            message += `📚 Unité: ${examData.unite_nom || ''}\n\n`;
+            message += `✅ Score: ${result.score}/${result.total} (${(result.percentage||0).toFixed(1)}%)\n\n`;
+            message += `📋 Mes réponses:\n`;
+            (result.responses || []).forEach((r, index) => {
+                message += `${index + 1}. ${r.question}\n`;
+                message += `   Réponse: ${r.reponse}\n`;
+                message += `   ${r.correct ? '✅ Correct' : '❌ Incorrect'}\n\n`;
+            });
+
+            // Ouvrir WhatsApp avec le message
+            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`);
+            
+            // Rediriger vers la page des examens
+            window.location.href = '{{ url_for("exams") }}';
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors de la soumission de l\'examen.');
+        }
+    });
+</script>
+<style>
+    .exam-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    .timer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #e74c3c;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .question {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .submit-container {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .submit-btn {
+        background: #2ecc71;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(46,204,113,0.3);
+    }
+</style>
+{% endblock %}

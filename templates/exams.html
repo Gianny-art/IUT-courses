@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="exams-container">
+    <h1>Examens disponibles</h1>
+    
+    {% if exams %}
+        <div class="exam-grid">
+            {% for exam in exams %}
+            <div class="exam-card">
+                <h2 class="exam-title">{{ exam.titre }}</h2>
+                <div class="exam-info">
+                    <p><strong>Unité :</strong> {{ exam.unite_nom }}</p>
+                    <p><strong>Date :</strong> {{ exam.date_debut }}</p>
+                    <p><strong>Durée :</strong> {{ exam.duree }} minutes</p>
+                </div>
+                <a href="{{ url_for('take_exam', exam_id=exam.id) }}" class="exam-button">
+                    Commencer l'examen
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-exams">
+            <p>Aucun examen n'est disponible pour le moment.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .exams-container {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .exam-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .exam-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .exam-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .exam-title {
+        color: #2c3e50;
+        font-size: 1.4em;
+        margin-bottom: 15px;
+    }
+
+    .exam-info {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .exam-info p {
+        margin: 5px 0;
+    }
+
+    .exam-button {
+        display: inline-block;
+        background: linear-gradient(90deg, #007bff, #00c6ff);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .exam-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+    }
+
+    .no-exams {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .exam-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

@@ -45,7 +45,15 @@
                     </ul>
                 </div>
                 <div class="gi-ue-actions">
-                    <a href="/assistant/unit/{{ unite.id }}" class="btn">Forum</a>
+                   
+    <a href="{{ url_for('forum_unit', unite_id=unite.id) }}" class="btn">
+        <span class="nav-icon">💬</span>
+        Chat de l'unité
+    </a>
+                    <a href="/assistant/unit/{{ unite.id }}" class="btn">IA 🤖</a>
+                   
+       <a href="{{ url_for('password') }}" class="btn">🎥 Formations 🔐</a>
+    </div><br><br>
                     <form action="/upload/{{ unite.id }}" method="post" enctype="multipart/form-data" style="display:inline-block;margin-left:1rem;">
                         <input type="file" name="file" style="display:inline-block;">
                         <button type="submit" class="btn btn-secondary">Charger un document</button>

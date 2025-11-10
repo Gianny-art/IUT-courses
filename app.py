@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 from flask_socketio import SocketIO, emit, join_room
 import openai
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os
+from datetime import datetime
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -86,45 +88,41 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
-# --- Forum par unité (chat instantané) ---
-@app.route("/forum/unit/<int:unite_id>")
-def forum_unit(unite_id):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-    conn = get_db_connection()
-    unite = conn.execute("SELECT * FROM unites WHERE id=?", (unite_id,)).fetchone()
-    posts = conn.execute(
-        "SELECT f.*, u.nom as username FROM forum_unit f JOIN users u ON f.user_id = u.id WHERE unite_id=? ORDER BY created_at ASC",
-        (unite_id,)
-    ).fetchall()
-    conn.close()
-    return render_template("forum_unit.html", unite=unite, posts=posts, unite_id=unite_id)
-
-# --- SocketIO events for chat ---
-@socketio.on('join', namespace='/chat')
-def join(data):
-    unite_id = data.get('unite_id')
-    username = data.get('username')
-    room = f"unite_{unite_id}"
-    join_room(room)
-    emit('status', {'msg': f"{username} a rejoint le chat."}, room=room)
-
 @socketio.on('send_message', namespace='/chat')
-def handle_message(data):
-    unite_id = data.get('unite_id')
-    user_id = data.get('user_id')
-    username = data.get('username')
-    content = data.get('content')
-    room = f"unite_{unite_id}"
-    # Save to DB
-    conn = get_db_connection()
-    conn.execute(
-        "INSERT INTO forum_unit (unite_id, user_id, content) VALUES (?, ?, ?)",
-        (unite_id, user_id, content)
-    )
-    conn.commit()
-    conn.close()
-    emit('receive_message', {'username': username, 'content': content}, room=room)
+def on_message(data):
+    if "user_id" not in session:
+        return
+        
+    unite_id = data['unite_id']
+    content = data['content']
+    share_to_whatsapp = data.get('shareToWhatsApp', False)
+    
+    try:
+        conn = get_db_connection()
+        # Enregistrer le message
+        conn.execute("""
+            INSERT INTO forum_messages (unite_id, user_id, content)
+            VALUES (?, ?, ?)
+        """, (unite_id, session["user_id"], content))
+        conn.commit()
+        
+        # Récupérer les informations de l'utilisateur
+        user = conn.execute("SELECT nom FROM users WHERE id = ?", 
+                        (session["user_id"],)).fetchone()
+        
+        # Émettre le message à tous les utilisateurs dans la salle
+        emit('message', {
+            'content': content,
+            'username': user['nom'],
+            'user_id': session["user_id"],
+            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'shareToWhatsApp': share_to_whatsapp
+        }, room=f"unite_{unite_id}")
+        
+    except Exception as e:
+        print(f"Erreur lors de l'envoi du message : {str(e)}")
+    finally:
+        conn.close()
 
 # --- Assistant IA par unité (placeholder) ---
 @app.route("/assistant/unit/<int:unite_id>")
@@ -162,25 +160,59 @@ def assistant_unit(unite_id):
     return render_template("assistant_unit.html", unite=unite, response=response, question=question)
 
 # --- Login ---
+# ...existing code...
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """
+    Route de connexion.
+    - Vérifie l'email/mot de passe dans la table users.
+    - Remplit session['user_id'], session['user_email'], session['user_name'].
+    - Émet une notification site via SocketIO (namespace /notifications).
+    """
+    error = None
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "")
+
         conn = get_db_connection()
-        user = conn.execute(
-            "SELECT * FROM users WHERE email=? AND password=?",
-            (email, password)
-        ).fetchone()
+        user_row = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
         conn.close()
-        if user:
-            session["user_id"] = user["id"]
-            session["username"] = user["nom"]
-            session["user_email"] = user["email"]
+
+        # Remplacez check_password par votre fonction de vérification (bcrypt, werkzeug, ...)
+        try:
+            valid = check_password(password, user_row["password"]) if user_row else False
+        except NameError:
+            # si check_password n'existe pas encore, fallback (dangereux si mots de passe en clair)
+            valid = bool(user_row and password == user_row["password"])
+
+        if user_row and valid:
+            session["user_id"] = user_row["id"]
+            session["user_email"] = user_row["email"]
+            session["user_name"] = user_row.get("nom") if isinstance(user_row, dict) else user_row["nom"]
+
+            # Notification site (Socket.IO) -- reçue par admins qui écoutent /notifications
+            try:
+                socketio.emit("site_notification", {
+                    "type": "login",
+                    "message": f"Utilisateur connecté : {session.get('user_name') or session.get('user_email')}",
+                    "user_id": session["user_id"],
+                    "timestamp": datetime.now().isoformat()
+                }, namespace="/notifications")
+            except Exception:
+                pass
+
             return redirect(url_for("index"))
-        else:
-            return "Identifiants incorrects."
-    return render_template("login.html")
+
+        error = "Email ou mot de passe invalide."
+
+        # si requête AJAX, renvoyer JSON
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"ok": False, "error": error}), 401
+
+    return render_template("login.html", error=error)
+
+# ...existing code...
 
 # --- Inscription ---
 @app.route("/register", methods=["GET", "POST"])
@@ -342,13 +374,13 @@ def pay():
                 amount = int(amount)    
             except (TypeError, ValueError):
                 amount = 0
-            if amount >= 2000:
+            if amount >= 1000:
                 conn.execute("UPDATE users SET pending_payment=1, has_paid=0 WHERE id=?", (session["user_id"],))
                 conn.commit()
                 waiting = True
                 message = "Votre paiement est en attente de validation par l'administrateur. Vous recevrez un accès dès confirmation."
             else:
-                message = "Le montant doit être supérieur ou égal à 2000 XAF."
+                message = "Le montant doit être supérieur ou égal à 1000 XAF."
         except Exception as e:
             message = f"Erreur lors de la validation du paiement : {e}"
     conn.close()
@@ -366,6 +398,54 @@ def admin_payments():
     users = conn.execute("SELECT id, nom, prenom, email, filiere FROM users WHERE pending_payment=1").fetchall()
     conn.close()
     return render_template("admin_payments.html", users=users)
+
+# ...existing code...
+@app.route("/admin/payments/validate/<int:payment_id>", methods=["POST"])
+@admin_required
+def validate_payment(payment_id):
+    """
+    Valide un paiement (appelé depuis l'interface admin).
+    Met à jour la table users/payments et émet une notification site via SocketIO.
+    """
+    conn = get_db_connection()
+    try:
+        # Exemple : si vous stockez les paiements dans payments
+        payment = conn.execute("SELECT * FROM payments WHERE id = ?", (payment_id,)).fetchone()
+        if payment:
+            conn.execute("""
+                UPDATE payments
+                SET status = ?, validated_by = ?, validated_at = ?
+                WHERE id = ?
+            """, ("validated", session.get("user_id"), datetime.now().isoformat(), payment_id))
+            # Optionnel : marquer l'utilisateur comme payé
+            conn.execute("UPDATE users SET has_paid=1, pending_payment=0 WHERE id = ?", (payment["user_id"],))
+            conn.commit()
+        else:
+            # Si vous n'avez pas de table payments, adaptez : update users WHERE id = ?
+            conn.close()
+            return "Paiement introuvable", 404
+
+        # Émettre notification site (admins connectés)
+        try:
+            socketio.emit("site_notification", {
+                "type": "payment_validated",
+                "message": f"Paiement validé (id: {payment_id})",
+                "payment_id": payment_id,
+                "timestamp": datetime.now().isoformat()
+            }, namespace="/notifications")
+        except Exception:
+            pass
+
+        # Support AJAX
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({"ok": True, "payment_id": payment_id})
+        return redirect(url_for("admin_payments"))
+    except Exception as e:
+        conn.rollback()
+        raise e
+    finally:
+        conn.close()
+# ...existing code...
 
 # --- Profil utilisateur ---
 @app.route("/profile", methods=["GET", "POST"])
@@ -428,6 +508,311 @@ def upload_file(unite_id):
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return redirect(url_for('static', filename='uploads/' + filename))
+
+# Ajouter ces routes après vos imports et avant if __name__ == "__main__":
+
+@app.route("/exams")
+def exams():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    conn = get_db_connection()
+    exams = conn.execute("""
+        SELECT e.*, u.nom as unite_nom 
+        FROM examens e
+        JOIN unites u ON e.unite_id = u.id
+        ORDER BY e.date_debut
+    """).fetchall()
+    conn.close()
+    return render_template("exams.html", exams=exams)
+# ...existing code...
+@app.route("/exam/<int:exam_id>", methods=["GET", "POST"])
+def take_exam(exam_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    try:
+        conn = get_db_connection()
+        exam_row = conn.execute("""
+            SELECT e.*, u.nom as unite_nom 
+            FROM examens e
+            JOIN unites u ON e.unite_id = u.id 
+            WHERE e.id=?
+        """, (exam_id,)).fetchone()
+        if not exam_row:
+            conn.close()
+            return "Examen introuvable", 404
+
+        # Convertir Row en dict pour rendre sérialisable en JSON dans le template
+        exam = dict(exam_row)
+
+        if request.method == "POST":
+            score = 0
+            responses = []
+            total_questions = 0
+            
+            for q in request.form:
+                if q.startswith('q_'):
+                    total_questions += 1
+                    question_id = q.split('_')[1]
+                    reponse = request.form[q]
+                    
+                    question_row = conn.execute(
+                        "SELECT question, reponse_correcte FROM questions WHERE id=?", 
+                        (question_id,)
+                    ).fetchone()
+                    question = dict(question_row) if question_row else {"question": "", "reponse_correcte": ""}
+                    
+                    is_correct = reponse.lower() == (question['reponse_correcte'] or '').lower()
+                    responses.append({
+                        "question": question['question'],
+                        "reponse": reponse,
+                        "correct": is_correct
+                    })
+                    
+                    if is_correct:
+                        score += 1
+            
+            # Calculate percentage
+            score_percentage = (score / total_questions * 100) if total_questions > 0 else 0
+            
+            # Save result with transaction
+            conn.execute("BEGIN")
+            try:
+                conn.execute("""
+                    INSERT INTO resultats_exam 
+                    (exam_id, user_id, score, score_percentage) 
+                    VALUES (?, ?, ?, ?)
+                """, (exam_id, session["user_id"], score, score_percentage))
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                raise e
+            
+            # If AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({
+                    "score": score,
+                    "total": total_questions,
+                    "percentage": score_percentage,
+                    "responses": responses
+                })
+            
+            return redirect(url_for("exams"))
+
+        questions_rows = conn.execute(
+            "SELECT * FROM questions WHERE exam_id=? ORDER BY id", 
+            (exam_id,)
+        ).fetchall()
+        # convertir questions en liste de dict (sécurise si besoin de JS)
+        questions = [dict(q) for q in questions_rows]
+        
+        return render_template("take_exam.html", exam=exam, questions=questions)
+        
+    except Exception as e:
+        return str(e), 500
+    finally:
+        conn.close()
+# ...existing code...
+
+@app.route("/admin/exams", methods=["GET", "POST"])
+@admin_required
+def admin_exams():
+    conn = get_db_connection()
+    
+    if request.method == "POST":
+        unite_id = request.form.get("unite_id")
+        titre = request.form.get("titre")
+        date_debut = request.form.get("date_debut")
+        duree = request.form.get("duree")
+        
+        # Insérer l'examen
+        cursor = conn.execute("""
+            INSERT INTO examens (unite_id, titre, date_debut, duree)
+            VALUES (?, ?, ?, ?)
+        """, (unite_id, titre, date_debut, duree))
+        
+        exam_id = cursor.lastrowid
+        
+        # Insérer les questions
+        questions = request.form.getlist("questions[]")
+        reponses = request.form.getlist("reponses[]")
+        
+        for q, r in zip(questions, reponses):
+            conn.execute("""
+                INSERT INTO questions (exam_id, question, reponse_correcte)
+                VALUES (?, ?, ?)
+            """, (exam_id, q, r))
+        
+        conn.commit()
+        return redirect(url_for("admin_exams"))
+    
+    # Récupérer les unités pour le formulaire
+    unites = conn.execute("SELECT * FROM unites").fetchall()
+    
+    # Récupérer les examens existants
+    examens = conn.execute("""
+        SELECT e.*, u.nom as unite_nom 
+        FROM examens e
+        JOIN unites u ON e.unite_id = u.id
+        ORDER BY e.date_debut DESC
+    """).fetchall()
+    
+    conn.close()
+    return render_template("admin_exams.html", unites=unites, examens=examens)
+
+@app.route("/admin/exams/delete/<int:exam_id>", methods=["POST"])
+@admin_required
+def admin_exams_delete(exam_id):
+    try:
+        conn = get_db_connection()
+        # Début de la transaction
+        conn.execute("BEGIN")
+        # Supprimer d'abord les questions associées
+        conn.execute("DELETE FROM questions WHERE exam_id = ?", (exam_id,))
+        # Puis supprimer l'examen
+        conn.execute("DELETE FROM examens WHERE id = ?", (exam_id,))
+        # Valider les changements
+        conn.commit()
+    except Exception as e:
+        # En cas d'erreur, annuler les changements
+        conn.rollback()
+        raise e
+    finally:
+        # Toujours fermer la connexion
+        conn.close()
+    return redirect(url_for("admin_exams"))
+
+# Supprimer l'ancienne route forum_unit si elle existe
+
+@app.route("/forum/unit/<int:unite_id>")
+def forum_unit(unite_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    
+    try:
+        conn = get_db_connection()
+        # Récupérer les messages
+        messages = conn.execute("""
+            SELECT m.*, u.nom as username 
+            FROM forum_messages m
+            JOIN users u ON m.user_id = u.id
+            WHERE m.unite_id = ?
+            ORDER BY m.created_at DESC
+        """, (unite_id,)).fetchall()
+        
+        # Récupérer les informations de l'unité
+        unite = conn.execute("""
+            SELECT * FROM unites 
+            WHERE id = ?
+        """, (unite_id,)).fetchone()
+        
+        if not unite:
+            return "Unité non trouvée", 404
+            
+    except Exception as e:
+        return str(e), 500
+    finally:
+        conn.close()
+    
+    return render_template(
+        "forum.html", 
+        messages=messages, 
+        unite=unite, 
+        unite_id=unite_id
+    )
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in {'mp4', 'webm', 'ogg', 'mov', 'mkv'}
+
+@app.route("/password", methods=["GET", "POST"])
+def password():
+    if request.method == "POST":
+        entered_password = request.form.get("password")
+        if entered_password == "1234":  # Remplacez par votre mot de passe
+            session['access_granted'] = True
+            return redirect(url_for('formations'))
+        else:
+            return render_template("password.html", error="Mot de passe incorrect.")
+    return render_template("password.html")
+
+# Route publique formations (renvoie vidéos + catégories)
+@app.route("/formations")
+def formations():
+    if "user_id" not in session or not session.get('access_granted'):
+        return redirect(url_for("password"))
+    conn = get_db_connection()
+    videos_rows = conn.execute("SELECT * FROM formations ORDER BY created_at DESC").fetchall()
+    categories_rows = conn.execute("SELECT DISTINCT categorie FROM formations").fetchall()
+    conn.close()
+    # convertir en listes simples pour template
+    videos = [dict(v) for v in videos_rows]
+    categories = [c['categorie'] for c in categories_rows if c['categorie']]
+    return render_template("formations.html", videos=videos, categories=categories)
+
+
+@app.route("/admin/formations", methods=["GET", "POST"])
+@admin_required
+def admin_formations():
+    conn = get_db_connection()
+    if request.method == "POST":
+        titre = request.form.get("titre")
+        description = request.form.get("description")
+        categorie = request.form.get("categorie", "General")
+        file = request.files.get("video")
+        if not titre or not file:
+            conn.close()
+            return "Titre et fichier requis", 400
+        if not allowed_file(file.filename):
+            conn.close()
+            return "Format vidéo non autorisé", 400
+
+        filename = secure_filename(file.filename)
+        save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        # si nom en double, ajouter timestamp
+        if os.path.exists(save_path):
+            name, ext = os.path.splitext(filename)
+            filename = f"{name}_{int(datetime.now().timestamp())}{ext}"
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(save_path)
+
+        try:
+            conn.execute("""
+                INSERT INTO formations (titre, description, categorie, filename, uploaded_by, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (titre, description, categorie, filename, session.get("user_id"), datetime.now()))
+            conn.commit()
+        finally:
+            conn.close()
+        return redirect(url_for("admin_formations"))
+
+    # GET :
+    categories = conn.execute("SELECT DISTINCT categorie FROM formations").fetchall()
+    videos = conn.execute("SELECT * FROM formations ORDER BY created_at DESC").fetchall()
+    conn.close()
+    return render_template("admin_formations.html", videos=videos, categories=[c['categorie'] for c in categories])
+
+@app.route("/admin/formations/delete/<int:video_id>", methods=["POST"])
+@admin_required
+def admin_formations_delete(video_id):
+    conn = get_db_connection()
+    try:
+        row = conn.execute("SELECT filename FROM formations WHERE id = ?", (video_id,)).fetchone()
+        if row:
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], row['filename'])
+            if os.path.exists(filepath):
+                try:
+                    os.remove(filepath)
+                except Exception:
+                    pass
+        conn.execute("DELETE FROM formations WHERE id = ?", (video_id,))
+        conn.commit()
+    finally:
+        conn.close()
+    return redirect(url_for("admin_formations"))
+# ...existing code...
+
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

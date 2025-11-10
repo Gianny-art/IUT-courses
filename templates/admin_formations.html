@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-forms">
+    <h1>Gérer les formations</h1>
+    <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <div>
+            <label>Titre</label>
+            <input type="text" name="titre" required>
+        </div>
+        <div>
+            <label>Catégorie</label>
+            <input type="text" name="categorie" placeholder="Ex: Réseaux, Dev Web">
+        </div>
+        <div>
+            <label>Description</label>
+            <textarea name="description"></textarea>
+        </div>
+        <div>
+            <label>Vidéo (mp4, webm, ogg...)</label>
+            <input type="file" name="video" accept="video/*" required>
+        </div>
+        <div style="margin-top:10px;">
+            <button type="submit">Téléverser</button>
+        </div>
+    </form>
+
+    <h2>Vidéos existantes</h2>
+    <div class="admin-list">
+        {% for v in videos %}
+        <div class="admin-item">
+            <h3>{{ v.titre }}</h3>
+            <small>{{ v.categorie }} - {{ v.created_at }}</small>
+            <form method="POST" action="{{ url_for('admin_formations_delete', video_id=v.id) }}" onsubmit="return confirm('Supprimer ?')">
+                <button type="submit">Supprimer</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.upload-form div { margin-bottom:8px; }
+.admin-item { background:#fff; padding:8px; border-radius:6px; margin-bottom:8px; }
+</style>
+{% endblock %}

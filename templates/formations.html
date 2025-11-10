@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="formations-page">
+    <h1>Formations</h1>
+
+    <div class="filter-bar">
+        <button class="filter-btn active" data-cat="all">Toutes</button>
+        {% for cat in categories %}
+        <button class="filter-btn" data-cat="{{ cat|e }}">{{ cat|e }}</button>
+        {% endfor %}
+    </div>
+
+    <div class="formations-grid" id="formationsGrid">
+        {% for v in videos %}
+        <div class="formation-card" data-cat="{{ v.categorie|e }}">
+            <video controls width="100%" preload="metadata">
+                <source src="{{ url_for('static', filename='uploads/' ~ v.filename) }}" type="video/mp4">
+                Votre navigateur ne supporte pas la lecture vidéo.
+            </video>
+            <h3>{{ v.titre }}</h3>
+            <p class="categorie">{{ v.categorie }}</p>
+            <p class="desc">{{ v.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.filter-btn { background:#f1f1f1; border:1px solid #ddd; padding:6px 10px; border-radius:6px; cursor:pointer; }
+.filter-btn.active { background:#007bff; color:#fff; border-color:#007bff; }
+.formations-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; }
+.formation-card { background:#fff; padding:12px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const buttons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.formation-card');
+
+    function setActive(btn) {
+        buttons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function filter(cat) {
+        cards.forEach(card => {
+            if (cat === 'all' || (card.dataset.cat || '').toLowerCase() === cat.toLowerCase()) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const cat = btn.dataset.cat || 'all';
+            setActive(btn);
+            filter(cat);
+        });
+    });
+});
+</script>
+{% endblock %}

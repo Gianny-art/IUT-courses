@@ -5,7 +5,7 @@
     <div class="alert alert-danger" style="color:#c00;font-weight:bold;margin-bottom:1rem;">{{ message }}</div>
     {% endif %}
     <h2>Accès Premium Requis</h2>
-    <p>Pour accéder aux cours, veuillez effectuer un paiement de <b>2000 XAF</b> via Orange Money.</p>
+    <p>Pour accéder aux cours, veuillez effectuer un paiement de <b>1000 XAF</b> via Orange Money.</p>
     <div style="margin:1.5rem 0;">
         <b>Numéro Orange Money :</b> <span style="font-size:1.2em;color:#0a0;">+237 655 26 06 84</span><br>
         <b>Nom du bénéficiaire :</b> Foapa
@@ -13,8 +13,8 @@
     {% if not waiting %}
     <form method="post">
         <label for="amount">Montant déposé (XAF) :</label><br>
-        <input type="number" name="amount" id="amount" min="2000" required style="width:70%;margin:1rem 0;" placeholder="Ex: 2000"><br>
-        <p style="color:#888;font-size:0.95em;">Faites un dépôt Orange Money sur le numéro <b>+237 655 26 06 84</b> (nom : Foapa), puis validez ici.<br>Le montant doit être &ge; 2000 XAF.<br>Vous devrez confirmer le paiement sur votre téléphone avec votre code secret Orange Money.</p>
+        <input type="number" name="amount" id="amount" min="1000" required style="width:70%;margin:1rem 0;" placeholder="Ex: 1000"><br>
+        <p style="color:#888;font-size:0.95em;">Faites un dépôt Orange Money sur le numéro <b>+237 655 26 06 84</b> (nom : Foapa), puis validez ici.<br>Le montant doit être &ge; 1000 XAF.<br>Vous devrez confirmer le paiement sur votre téléphone avec votre code secret Orange Money.</p>
         <button type="submit" class="btn">J'ai payé, valider l'accès</button>
     </form>
     {% else %}

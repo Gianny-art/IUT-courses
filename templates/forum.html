@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="forum-container">
+    <div class="chat-messages" id="messages">
+        {% for message in messages %}
+        <div class="message {% if message.user_id == session.user_id %}sent{% else %}received{% endif %}">
+            <strong>{{ message.username }}</strong>
+            <p>{{ message.content }}</p>
+            <span class="time">{{ message.created_at }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="chat-input">
+        <input type="text" id="message" placeholder="Tapez votre message...">
+        <button onclick="sendMessage()" class="send-btn">Envoyer</button>
+        <button onclick="shareToWhatsApp()" class="whatsapp-btn">
+          <span>📱 Continuer sur WhatsApp</span>
+        </button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const socket = io('/chat');
+    const unite_id = {{ unite_id }};
+    
+    socket.emit('join', {unite_id: unite_id});
+    
+    socket.on('message', function(data) {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${data.user_id == {{ session.user_id }} ? 'sent' : 'received'}`;
+        messageDiv.innerHTML = `
+            <strong>${data.username}</strong>
+            <p>${data.content}</p>
+            <span class="time">${new Date().toLocaleTimeString()}</span>
+        `;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        // Si configuré pour partager sur WhatsApp
+        if (data.shareToWhatsApp) {
+            shareToWhatsApp(data.content);
+        }
+    });
+    
+    function sendMessage() {
+        const input = document.getElementById('message');
+        const content = input.value.trim();
+        if (content) {
+            socket.emit('send_message', {
+                content: content,
+                unite_id: unite_id,
+                shareToWhatsApp: true // Activer le partage WhatsApp
+            });
+            input.value = '';
+        }
+    }
+
+    function shareToWhatsApp() {
+        // Récupérer tous les messages
+        const messages = Array.from(document.querySelectorAll('.message')).map(msg => {
+            const username = msg.querySelector('strong').textContent;
+            const content = msg.querySelector('p').textContent;
+            return `${username}: ${content}`;
+        }).join('\n');
+
+        // Créer le lien WhatsApp avec le texte
+        const whatsappText = `Messages du forum ${unite_id}:\n\n${messages}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
+        window.open(whatsappUrl);
+    }
+
+    // Permettre l'envoi avec la touche Entrée
+    document.getElementById('message').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+</script>
+
+<style>
+/* ...styles existants... */
+
+.whatsapp-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+
+.whatsapp-btn:hover {
+    background: #128C7E;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.message.sent {
+    background: #007bff;
+    color: white;
+    margin-left: auto;
+}
+
+.message.received {
+    background: #e9ecef;
+    color: #212529;
+}
+
+.message strong {
+    font-size: 0.9em;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.message .time {
+    font-size: 0.8em;
+    opacity: 0.7;
+    display: block;
+    margin-top: 5px;
+}
+</style>
+{% endblock %}

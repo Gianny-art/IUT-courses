@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>Administration des Examens</h1>
+    
+    <div class="exam-form-container">
+        <h2>Ajouter un nouvel examen</h2>
+        <form method="POST" class="exam-form">
+            <div class="form-group">
+                <label for="unite">Unité :</label>
+                <select name="unite_id" id="unite" required>
+                    {% for unite in unites %}
+                        <option value="{{ unite.id }}">{{ unite.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="titre">Titre de l'examen :</label>
+                <input type="text" id="titre" name="titre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date_debut">Date de l'examen :</label>
+                <input type="datetime-local" id="date_debut" name="date_debut" required>
+            </div>
+
+            <div class="form-group">
+                <label for="duree">Durée (minutes) :</label>
+                <input type="number" id="duree" name="duree" min="1" required>
+            </div>
+
+            <div id="questions-container">
+                <h3>Questions</h3>
+                <div class="question-item">
+                    <input type="text" name="questions[]" placeholder="Question 1" required>
+                    <input type="text" name="reponses[]" placeholder="Réponse 1" required>
+                </div>
+            </div>
+
+            <button type="button" class="btn-secondary" onclick="addQuestion()">+ Ajouter une question</button>
+            <button type="submit" class="btn-primary">Créer l'examen</button>
+        </form>
+    </div>
+
+    <div class="existing-exams">
+        <h2>Examens existants</h2>
+        <div class="exams-list">
+            {% for exam in examens %}
+           <!-- Dans la boucle des examens existants -->
+<div class="exam-item">
+    <h3>{{ exam.titre }}</h3>
+    <p>Unité : {{ exam.unite_nom }}</p>
+    <p>Date : {{ exam.date_debut }}</p>
+    <p>Durée : {{ exam.duree }} minutes</p>
+    <form method="POST" action="{{ url_for('admin_exams_delete', exam_id=exam.id) }}" 
+          style="display: inline;">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit" class="btn-danger" 
+                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet examen ?')">
+            Supprimer
+        </button>
+    </form>
+</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .exam-form-container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .form-group input, .form-group select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .question-item {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    .exam-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+
+<script>
+    let questionCount = 1;
+    
+    function addQuestion() {
+        questionCount++;
+        const container = document.getElementById('questions-container');
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question-item';
+        questionDiv.innerHTML = `
+            <input type="text" name="questions[]" placeholder="Question ${questionCount}" required>
+            <input type="text" name="reponses[]" placeholder="Réponse ${questionCount}" required>
+        `;
+        container.appendChild(questionDiv);
+    }
+</script>
+{% endblock %}

@@ -105,57 +105,73 @@
         <div class="container header-flex">
             <div class="logo">
                 <img src="https://1.bp.blogspot.com/-cNfaE8VuOl8/Xw7pY_vBzBI/AAAAAAAAGtk/Ce9Et7agQIUrlv1UeVtc3HRQt7z9pBwWACLcBGAsYHQ/s1600/IUT-FV.jpg" alt="IUT Logo" height="48" style="vertical-align:middle;">
-                <span class="site-title">IUT e-Learning</span>
+                <span class="site-title">IUT courses</span>
             </div>
-           <nav class="main-nav cool-nav">
-    <ul class="nav-list">
-        <li>
-            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-label">Accueil</span>
-            </a>
-        </li>
-        {% if session.get('username') %}
+    <nav class="cool-nav">
+        <ul class="nav-list">
             <li>
-                <a href="{{ url_for('courses') }}" class="{% if request.endpoint == 'courses' %}active{% endif %}">
-                    <span class="nav-icon">📚</span>
-                    <span class="nav-label">Cours</span>
+                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Accueil</span>
                 </a>
             </li>
-        {% endif %}
-        {% if session.get("username") %}
-            <li>
-                <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
-                    <span class="nav-icon">👤</span>
-                    <span class="nav-label">Profil</span>
-                </a>
-            </li>
-            {% if session.get("user_email") == "giannyfoapa@gmail.com" %}
+            {% if session.get('user_id') %}
                 <li>
-                    <a href="{{ url_for('admin_payments') }}" class="btn btn-warning">
-                        <span class="nav-icon">💳</span>
-                        <span class="nav-label">Valider</span>
+                    <a href="{{ url_for('courses') }}" class="{% if request.endpoint == 'courses' %}active{% endif %}">
+                        <span class="nav-icon">📚</span>
+                        <span class="nav-label">Cours</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('exams') }}" class="{% if request.endpoint == 'exams' %}active{% endif %}">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-label">Examens</span>
+                    </a>
+                </li>
+                {% if session.get("user_email") == "giannyfoapa@gmail.com" %}
+                    <li>
+                        <a href="{{ url_for('admin_exams') }}" class="{% if request.endpoint == 'admin_exams' %}active{% endif %}">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-label">Admin Examens</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_formations') }}" class="{% if request.endpoint == 'admin_formations' %}active{% endif %}">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-label">Gérer Formations</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_payments') }}" class="{% if request.endpoint == 'admin_payments' %}active{% endif %}">
+                            <span class="nav-icon">💳</span>
+                            <span class="nav-label">Paiements</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li>
+                    <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-label">Profil</span>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('login') }}" class="btn">
+                        <span class="nav-icon">🔑</span>
+                        <span class="nav-label">Connexion</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('register') }}" class="btn btn-secondary">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-label">Inscription</span>
                     </a>
                 </li>
             {% endif %}
-        {% else %}
-            <li>
-                <a href="{{ url_for('login') }}" class="btn">
-                    <span class="nav-icon">🔑</span>
-                    <span class="nav-label">Connexion</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('register') }}" class="btn btn-secondary">
-                    <span class="nav-icon">📝</span>
-                    <span class="nav-label">Inscription</span>
-                </a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
-        </div>
-    </header>
+        </ul>
+    </nav>
+</header>
+<div id="site-notifications" style="position:fixed; right:16px; top:16px; z-index:9999;"></div>
     <main class="container">
         {% block content %}{% endblock %}
     </main>
@@ -189,6 +205,33 @@ if (gallery && gallery.children.length > 2) {
         idx++;
     }, 2200);
 }
+
+  const IS_ADMIN = {{ 'true' if session.get('user_email') == ADMIN_EMAIL else 'false' }};
+    if (IS_ADMIN) {
+        const notSocket = io('/notifications');
+        const container = document.getElementById('site-notifications');
+
+        notSocket.on('connect', ()=>{ console.log('Notifications connected'); });
+
+        notSocket.on('site_notification', function(data){
+            // créer toast simple
+            const el = document.createElement('div');
+            el.style.background = '#333';
+            el.style.color = '#fff';
+            el.style.padding = '10px 14px';
+            el.style.marginTop = '8px';
+            el.style.borderRadius = '6px';
+            el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            el.textContent = (data.message || 'Notification');
+            container.appendChild(el);
+            // auto remove
+            setTimeout(()=> {
+                el.style.transition = 'opacity 0.4s';
+                el.style.opacity = '0';
+                setTimeout(()=> el.remove(), 400);
+            }, 8000);
+        });
+    }
 </script>
 </body>
 </html>
