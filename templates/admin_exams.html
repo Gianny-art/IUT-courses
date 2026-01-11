@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include '_admin_nav.html' %}
 <div class="admin-container">
     <h1>Administration des Examens</h1>
     
     <div class="exam-form-container">
         <h2>Ajouter un nouvel examen</h2>
-        <form method="POST" class="exam-form">
+        <form method="POST" class="exam-form" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="unite">Unité :</label>
                 <select name="unite_id" id="unite" required>
@@ -34,8 +35,17 @@
             <div id="questions-container">
                 <h3>Questions</h3>
                 <div class="question-item">
-                    <input type="text" name="questions[]" placeholder="Question 1" required>
-                    <input type="text" name="reponses[]" placeholder="Réponse 1" required>
+                    <textarea name="questions[]" placeholder="Question 1" required rows="3"></textarea>
+                    <input type="text" name="reponses[]" placeholder="Réponse correcte (si applicable)">
+                    <div>
+                        <label>Image (optionnelle)</label>
+                        <input type="file" name="question_image[]" accept="image/*">
+                        <label>Type de réponse</label>
+                        <select name="answer_type[]">
+                            <option value="short">Courte</option>
+                            <option value="long">Développée (grand champ)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -144,8 +154,17 @@
         const questionDiv = document.createElement('div');
         questionDiv.className = 'question-item';
         questionDiv.innerHTML = `
-            <input type="text" name="questions[]" placeholder="Question ${questionCount}" required>
-            <input type="text" name="reponses[]" placeholder="Réponse ${questionCount}" required>
+            <textarea name="questions[]" placeholder="Question ${questionCount}" required rows="3"></textarea>
+            <input type="text" name="reponses[]" placeholder="Réponse correcte (si applicable)">
+            <div>
+                <label>Image (optionnelle)</label>
+                <input type="file" name="question_image[]" accept="image/*">
+                <label>Type de réponse</label>
+                <select name="answer_type[]">
+                    <option value="short">Courte</option>
+                    <option value="long">Développée (grand champ)</option>
+                </select>
+            </div>
         `;
         container.appendChild(questionDiv);
     }

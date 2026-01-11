@@ -1,0 +1,438 @@
+{
+  "to_insert": [
+    {
+      "nom": "Awounang Tsafack Ersu",
+      "prenom": "Obama",
+      "email": "ersutsafack@gmail.com"
+    },
+    {
+      "nom": "Banfogha Berinyuy",
+      "prenom": "Anass",
+      "email": "banfoghaanass@gmail.com"
+    },
+    {
+      "nom": "D.Meli Teikeu",
+      "prenom": "Elroy",
+      "email": "elroymeli12@gmail.com"
+    },
+    {
+      "nom": "Djofang Kwatcho",
+      "prenom": "Joyce",
+      "email": "joycedjofang52@gmail.com"
+    },
+    {
+      "nom": "Djuikom Gnokam Brigitte",
+      "prenom": "Merveille",
+      "email": "gnokammerveille@gmail.com"
+    },
+    {
+      "nom": "Dongmene Binda Ange",
+      "prenom": "Donald",
+      "email": "bindadonald@gmail.com"
+    },
+    {
+      "nom": "Ekoume Tchokouassi Romane",
+      "prenom": "Wilfrid",
+      "email": "ekoumetchokouassi@gmail.com"
+    },
+    {
+      "nom": "El Kabirou Moubarak",
+      "prenom": "Ndie",
+      "email": "ekabir689@gmail.com"
+    },
+    {
+      "nom": "Essome Etame Miguel",
+      "prenom": "Jovial",
+      "email": "miguelessome17@gmail.com"
+    },
+    {
+      "nom": "Fogue Fokam",
+      "prenom": "Junior",
+      "email": "juniorfokam54@gmail.com"
+    },
+    {
+      "nom": "Fogue Poka Hens",
+      "prenom": "Levy",
+      "email": "henspoka22@gmail.com"
+    },
+    {
+      "nom": "Fosso Nguemo Nelson",
+      "prenom": "Bilice",
+      "email": "nelsonfosso910@gmail.com"
+    },
+    {
+      "nom": "Fosso Saah Emma Aggée",
+      "prenom": "Luther",
+      "email": "aggeefosso@gmail.com"
+    },
+    {
+      "nom": "Fosso Sob Marcelin",
+      "prenom": "Ortega",
+      "email": "ortegaeditor@gmail.com"
+    },
+    {
+      "nom": "Gnokam Sindze Merveille",
+      "prenom": "Lena",
+      "email": "ismaelabicange@gmail.com"
+    },
+    {
+      "nom": "Godwe Yanda",
+      "prenom": "Florian",
+      "email": "maloudaflorian19@gmail.com"
+    },
+    {
+      "nom": "Kamdem Tchomtchoua Sorel",
+      "prenom": "Landry",
+      "email": "kamdemlandrysorel@gmail.com"
+    },
+    {
+      "nom": "Kamgaing Tiagno",
+      "prenom": "Jordan",
+      "email": "kamgaingjordan2024@icloud.com"
+    },
+    {
+      "nom": "Kamogne Tedonnang",
+      "prenom": "Torres",
+      "email": "tkamogne@gmail.com"
+    },
+    {
+      "nom": "Ken Toukem Pulcherie",
+      "prenom": "Wonder",
+      "email": "wonderpulcherie@gmail.com"
+    },
+    {
+      "nom": "Kenfack Toukeng",
+      "prenom": "Manuella",
+      "email": "manuellakenfack55@gmail.com"
+    },
+    {
+      "nom": "Kengne Kamdem Fotso Brayan",
+      "prenom": "Zephirin",
+      "email": "kengneb123@icloud.com"
+    },
+    {
+      "nom": "Kianpi Tsakou Stève",
+      "prenom": "Junior",
+      "email": "juniorkianpi@gmail.com"
+    },
+    {
+      "nom": "Kom Silatchom",
+      "prenom": "Marc-Axel",
+      "email": "marckom500@gmail.com"
+    },
+    {
+      "nom": "Komguem Ornella",
+      "prenom": "Teddy",
+      "email": "komguemornella@gmail.com"
+    },
+    {
+      "nom": "Lontio Tsamene Chirac",
+      "prenom": "Kessel",
+      "email": "lontiokessel@gmail.com"
+    },
+    {
+      "nom": "M'Pesse Messi Jacques",
+      "prenom": "Stephane",
+      "email": "stephanemessi42@gmail.com"
+    },
+    {
+      "nom": "Maffa Kouda",
+      "prenom": "Flora",
+      "email": "maffakouda@gmail.com"
+    },
+    {
+      "nom": "Mamdem Pouna Corrine",
+      "prenom": "Vannelle",
+      "email": "vanellepouna@gmail.com"
+    },
+    {
+      "nom": "Massock Serena",
+      "prenom": "Carelle",
+      "email": "massockserenacarelle@gmail.com"
+    },
+    {
+      "nom": "Mbiangang Mbatchou",
+      "prenom": "Danielle",
+      "email": "macairemacairembatchou@gmail.com"
+    },
+    {
+      "nom": "Mboupmo Neguem Martial",
+      "prenom": "Joël",
+      "email": "joelneguem@gmail.com"
+    },
+    {
+      "nom": "Mebou Keungni",
+      "prenom": "Sorelle",
+      "email": "keungnisorelle@gmail.com"
+    },
+    {
+      "nom": "Medonjio Tenang",
+      "prenom": "Jodeanas",
+      "email": "medonjiojodeanas@gmail.com"
+    },
+    {
+      "nom": "Megaptche Feudju Hans",
+      "prenom": "Mathieu",
+      "email": "megaptchehansmathieu@gmail.com"
+    },
+    {
+      "nom": "Mewe Wouebe",
+      "prenom": "Denise",
+      "email": "wouebemewe@gmail.com"
+    },
+    {
+      "nom": "Motio Sinou Pascale",
+      "prenom": "Saurelle",
+      "email": "motiosaurelle2@gmail.com"
+    },
+    {
+      "nom": "Motouom Mba Isabelle",
+      "prenom": "Sandra",
+      "email": "motouomsandra@gmail.com"
+    },
+    {
+      "nom": "Motso Simo Paloma",
+      "prenom": "Batista",
+      "email": "palomamotso@gmail.com"
+    },
+    {
+      "nom": "Nanseu Saming David",
+      "prenom": "Ronel",
+      "email": "davidronelnanseusaming@gmail.com"
+    },
+    {
+      "nom": "Ndamzo Ngassam Yvan",
+      "prenom": "Franck",
+      "email": "yndamz@gmail.com"
+    },
+    {
+      "nom": "Ngouane Fouegouo Sthanis",
+      "prenom": "Ronel",
+      "email": "nglamembrane@gmail.com"
+    },
+    {
+      "nom": "Nguemo Patio",
+      "prenom": "Abdias",
+      "email": "abdiasnguemo@gmail.comn"
+    },
+    {
+      "nom": "Nguepnang Tene Valery",
+      "prenom": "Christian",
+      "email": "nguepnangtene@gmail.com"
+    },
+    {
+      "nom": "Nguiejouo Chenkep Lynsha",
+      "prenom": "Zita",
+      "email": "nguiejouochenkep@gmail.com"
+    },
+    {
+      "nom": "Njeunga Nyakam Alvine",
+      "prenom": "Carmelle",
+      "email": "alvinenjeunga7@gmail.com"
+    },
+    {
+      "nom": "Njofang Njinkeu Joresse",
+      "prenom": "Landry",
+      "email": "landrynjinkeu1@gmail.com"
+    },
+    {
+      "nom": "Njoya Faissal",
+      "prenom": "Aboubakar",
+      "email": "ninhonjoya@icloud.com"
+    },
+    {
+      "nom": "Noumsi Noumsi Ange",
+      "prenom": "Adrien",
+      "email": "angenoumsi4@gmail.com"
+    },
+    {
+      "nom": "Nounamo Manga Chris",
+      "prenom": "Gerald",
+      "email": "chris552352@gmail.com"
+    },
+    {
+      "nom": "Ntamen Wabo Jovial",
+      "prenom": "Dafne",
+      "email": "jovialwabo9@gmail.com"
+    },
+    {
+      "nom": "Ntousse Djiotsop",
+      "prenom": "Sonyva",
+      "email": "sonyvantousse@gmail.com"
+    },
+    {
+      "nom": "Pibo Sikati Floriane",
+      "prenom": "Patricia",
+      "email": "patifloriane6@gmail.com"
+    },
+    {
+      "nom": "Pola Fokoua Leon",
+      "prenom": "Marie",
+      "email": "k60215860@gmail.com"
+    },
+    {
+      "nom": "Sabang",
+      "prenom": "Adelphe",
+      "email": "adelphsabang@gmail.com"
+    },
+    {
+      "nom": "Signier Nimkam Ange",
+      "prenom": "Divine",
+      "email": "signierangedivine@gmail.com"
+    },
+    {
+      "nom": "Sileha Tcheteu",
+      "prenom": "Parfait",
+      "email": "tcheteuparfait@gmail.com"
+    },
+    {
+      "nom": "Simo Mba Jorem",
+      "prenom": "Mnolson",
+      "email": "mewafosostelle@gmail.com"
+    },
+    {
+      "nom": "Simo Tambe Rayan",
+      "prenom": "Ledoux",
+      "email": "simotambe237@gmail.com"
+    },
+    {
+      "nom": "Soumgno Foubia Medhy",
+      "prenom": "Roddick",
+      "email": "medhyroddick@gmail.com"
+    },
+    {
+      "nom": "Tagne Wilfried",
+      "prenom": "Mikel",
+      "email": "timikwardner@gmail.com"
+    },
+    {
+      "nom": "Tagne Tchouabeh Franck",
+      "prenom": "Gervais",
+      "email": "tchouabehfranck@gmail.com"
+    },
+    {
+      "nom": "Tamaffo Fomekong",
+      "prenom": "Yuniel",
+      "email": "yunieltamaffo@gmail.com"
+    },
+    {
+      "nom": "Tassimo Talla Noël",
+      "prenom": "Achille",
+      "email": "tassimoachille@gmail.com"
+    },
+    {
+      "nom": "Tchiotsop Lado",
+      "prenom": "Franklin",
+      "email": "tchiotsopfranklin@gmail.com"
+    },
+    {
+      "nom": "Tchouala Taboua Duval",
+      "prenom": "Brael",
+      "email": "duvalbrael@icloud.com"
+    },
+    {
+      "nom": "Tchuenteu Kamche Martin",
+      "prenom": "Hugo",
+      "email": "tchuenteukamchemartin@gmail.com"
+    },
+    {
+      "nom": "Tede Fokou Derick",
+      "prenom": "Jostin",
+      "email": "fokouderick796@gmail.com"
+    },
+    {
+      "nom": "Tedonzon Teizi Neslie",
+      "prenom": "Merveille",
+      "email": "teizitedonzon@gmail.com"
+    },
+    {
+      "nom": "Tsayem Tedongmouo",
+      "prenom": "Pavel",
+      "email": "tsayempavel373@gmail.com"
+    },
+    {
+      "nom": "Wandji Florida",
+      "prenom": "Liduvine",
+      "email": "ludivinewandji2@gmail.com"
+    },
+    {
+      "nom": "Yati Deyi Pascale",
+      "prenom": "Loryna",
+      "email": "yati81694@gmail.com"
+    },
+    {
+      "nom": "Yengoua Kamga Dilan",
+      "prenom": "Brian",
+      "email": "dilanyengoua@gmail.com"
+    }
+  ],
+  "already_present": [
+    {
+      "nom": "Foapa Gianny",
+      "prenom": "Robert",
+      "email": "giannyfoapa@gmail.com"
+    },
+    {
+      "nom": "Sobgoum Temgo Alan",
+      "prenom": "Fred",
+      "email": "sobgoumtemgoalanfred@gmail.com"
+    },
+    {
+      "nom": "Tewalo Moguem Ange",
+      "prenom": "Maëlle",
+      "email": "angemaelle2024@gmail.com"
+    },
+    {
+      "nom": "Tiemdjo Brandolph",
+      "prenom": "Ryan",
+      "email": "ryanbrandolph@gmail.com"
+    }
+  ],
+  "no_email": [
+    {
+      "nom": "CHIENANG TCHANKIO JOEL ROLAND",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "DOUANLA Khamel Orlan",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "FOKO MANG Christ Brayant",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "KANA KENMENE Laura Princesse",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "KUETE TATSA DJAMEL ANDERSON",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "SAMO DJOMO Manuella Erika",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "TCHEUMAGA MINTA MARIAH MAYBELLINE",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "TENE KUETCHE Ulrich Joel",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "WAMBO A NYAM BRYAN",
+      "prenom": "",
+      "email": null
+    }
+  ]
+}

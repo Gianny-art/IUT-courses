@@ -1,0 +1,13 @@
+<div class="admin-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+    <a href="{{ url_for('admin_posts') }}" class="admin-tab {% if request.endpoint == 'admin_posts' %}active{% endif %}">Validation Posts</a>
+    <a href="{{ url_for('admin_exams') }}" class="admin-tab {% if request.endpoint == 'admin_exams' %}active{% endif %}">Examens</a>
+    <a href="{{ url_for('admin_formations') }}" class="admin-tab {% if request.endpoint == 'admin_formations' %}active{% endif %}">Formations</a>
+    <a href="{{ url_for('admin_payments') }}" class="admin-tab {% if request.endpoint == 'admin_payments' %}active{% endif %}">Paiements</a>
+    <a href="{{ url_for('admin_chats') }}" class="admin-tab {% if request.endpoint == 'admin_chats' %}active{% endif %}">Modérer Chats</a>
+</div>
+<div style="float:right;margin-top:-36px;font-size:0.9em;color:#666">IA : {% if openai_key_configured %}<strong style="color:green">configurée</strong>{% else %}<strong style="color:#c00">non configurée</strong>{% endif %}</div>
+<style>
+.admin-tab{padding:8px 12px;border-radius:8px;background:#f4f6fb;color:#003366;text-decoration:none;border:1px solid #e6eefc}
+.admin-tab.active{background:linear-gradient(90deg,#007bff,#00c6ff);color:#fff}
+@media(max-width:600px){.admin-tabs{overflow:auto;padding-bottom:6px}}
+</style>

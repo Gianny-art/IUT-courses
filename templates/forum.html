@@ -21,64 +21,67 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 <script>
-    const socket = io('/chat');
-    const unite_id = {{ unite_id }};
-    
-    socket.emit('join', {unite_id: unite_id});
-    
-    socket.on('message', function(data) {
-        const messagesDiv = document.getElementById('messages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${data.user_id == {{ session.user_id }} ? 'sent' : 'received'}`;
-        messageDiv.innerHTML = `
-            <strong>${data.username}</strong>
-            <p>${data.content}</p>
-            <span class="time">${new Date().toLocaleTimeString()}</span>
-        `;
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    const UNITE_ID = {{ unite_id | tojson }};
+    const SESSION_USER_ID = {{ session.get('user_id') | tojson }};
 
-        // Si configuré pour partager sur WhatsApp
-        if (data.shareToWhatsApp) {
-            shareToWhatsApp(data.content);
-        }
-    });
-    
-    function sendMessage() {
+    async function sendMessage() {
         const input = document.getElementById('message');
         const content = input.value.trim();
-        if (content) {
-            socket.emit('send_message', {
-                content: content,
-                unite_id: unite_id,
-                shareToWhatsApp: true // Activer le partage WhatsApp
+        if (!content) return;
+        try {
+            const res = await fetch(`/forum/unit/${UNITE_ID}/message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: content, share_whatsapp: true })
             });
-            input.value = '';
+            const data = await res.json();
+            if (data.ok) {
+                appendMessage(data.message);
+                input.value = '';
+            } else {
+                alert(data.error || 'Erreur lors de l\'envoi du message');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Erreur réseau');
         }
     }
 
+    function appendMessage(m) {
+        const messagesDiv = document.getElementById('messages');
+        if (!messagesDiv) return;
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${m.user_id == SESSION_USER_ID ? 'sent' : 'received'}`;
+        messageDiv.innerHTML = `
+            <strong>${m.username}</strong>
+            <p>${m.content}</p>
+            <span class="time">${m.created_at}</span>
+        `;
+        // prepend to keep newest on top as server renders descending
+        messagesDiv.prepend(messageDiv);
+    }
+
     function shareToWhatsApp() {
-        // Récupérer tous les messages
         const messages = Array.from(document.querySelectorAll('.message')).map(msg => {
-            const username = msg.querySelector('strong').textContent;
-            const content = msg.querySelector('p').textContent;
+            const username = msg.querySelector('strong') ? msg.querySelector('strong').textContent : '';
+            const content = msg.querySelector('p') ? msg.querySelector('p').textContent : '';
             return `${username}: ${content}`;
         }).join('\n');
-
-        // Créer le lien WhatsApp avec le texte
-        const whatsappText = `Messages du forum ${unite_id}:\n\n${messages}`;
+        const whatsappText = `Messages du forum ${UNITE_ID}:\n\n${messages}`;
         const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
         window.open(whatsappUrl);
     }
 
     // Permettre l'envoi avec la touche Entrée
-    document.getElementById('message').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
+    const msgInputEl = document.getElementById('message');
+    if (msgInputEl) {
+        msgInputEl.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    }
 </script>
 
 <style>

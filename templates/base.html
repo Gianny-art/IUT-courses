@@ -119,6 +119,15 @@
                 <img src="https://1.bp.blogspot.com/-cNfaE8VuOl8/Xw7pY_vBzBI/AAAAAAAAGtk/Ce9Et7agQIUrlv1UeVtc3HRQt7z9pBwWACLcBGAsYHQ/s1600/IUT-FV.jpg" alt="IUT Logo" height="48" style="vertical-align:middle;">
                 <span class="site-title">IUT courses</span>
             </div>
+
+            <!-- Assistant IA buttons: floating bottom-left and top-right fallback -->
+            <div id="assistant-toggle" title="Assistant IA" style="position:fixed; left:20px; bottom:90px; z-index:99999;">
+                <div id="assistant-btn" style="background:linear-gradient(90deg,#ff7a18,#af002d); width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 10px 30px rgba(0,0,0,0.2);cursor:pointer">🤖</div>
+            </div>
+            <div id="assistant-toggle-top" style="position:absolute; right:14px; top:12px; z-index:99999;">
+                <button id="assistant-btn-top" title="Assistant IA" style="background:linear-gradient(90deg,#ff7a18,#af002d); width:42px;height:42px;border-radius:50%;border:none;color:#fff;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.12)">🤖</button>
+            </div>
+
     <nav class="cool-nav">
         <ul class="nav-list">
             <li>
@@ -127,6 +136,13 @@
                     <span class="nav-label">Accueil</span>
                 </a>
             </li>
+            <li>
+                    <a href="{{ url_for('list_chats') }}" id="nav-chats-link" class="{%- if request.endpoint == 'list_chats' or request.endpoint == 'chat_room' -%}active{%- endif -%}" style="position:relative">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-label">Chats</span>
+                        <span id="nav-chats-badge" style="display:none;position:absolute;top:6px;right:6px;background:#ff3b30;color:#fff;width:16px;height:16px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;line-height:1;">•</span>
+                    </a>
+                </li>
             {% if session.get('user_id') %}
                 <li>
                     <a href="{{ url_for('courses') }}" class="{% if request.endpoint == 'courses' %}active{% endif %}">
@@ -159,6 +175,12 @@
                             <span class="nav-label">Paiements</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ url_for('admin_chats') }}" class="{% if request.endpoint == 'admin_chats' %}active{% endif %}">
+                            <span class="nav-icon">💬</span>
+                            <span class="nav-label">Modérer Chats</span>
+                        </a>
+                    </li>     
                 {% endif %}
                 <li>
                     <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
@@ -183,8 +205,8 @@
         </ul>
     </nav>
 </header>
-<div id="site-notifications" style="position:fixed; right:16px; top:16px; z-index:9999;"></div>
-    <main class="container">
+<div id="site-notifications" style="position:fixed; right:16px; top:16px; z-index:9999;max-width:480px;overflow:auto;padding:6px;box-sizing:border-box;"></div>
+    <main class="container" {% if session.get('user_id') %}data-user-id="{{ session.get('user_id') }}"{% endif %}>
         {% block content %}{% endblock %}
     </main>
     <footer class="main-footer">
@@ -218,32 +240,139 @@ if (gallery && gallery.children.length > 2) {
     }, 2200);
 }
 
-  const IS_ADMIN = {{ 'true' if session.get('user_email') == ADMIN_EMAIL else 'false' }};
-    if (IS_ADMIN) {
-        const notSocket = io('/notifications');
-        const container = document.getElementById('site-notifications');
+const USER_ID = (function(){
+    try {
+        const el = document.querySelector('main[data-user-id]');
+        return el ? Number(el.getAttribute('data-user-id')) || null : null;
+    } catch(e){ return null }
+})();
+if (USER_ID){
+    const notSocket = io('/notifications');
+    const container = document.getElementById('site-notifications');
 
-        notSocket.on('connect', ()=>{ console.log('Notifications connected'); });
+    notSocket.on('connect', ()=>{ console.log('Notifications connected'); });
 
-        notSocket.on('site_notification', function(data){
-            // créer toast simple
+    notSocket.on('site_notification', function(data){
+        // créer toast simple
+        const el = document.createElement('div');
+        el.style.background = '#333';
+        el.style.color = '#fff';
+        el.style.padding = '10px 14px';
+        el.style.marginTop = '8px';
+        el.style.borderRadius = '6px';
+        el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        el.textContent = (data.message || 'Notification');
+        container.appendChild(el);
+        // auto remove
+        setTimeout(()=> {
+            el.style.transition = 'opacity 0.4s';
+            el.style.opacity = '0';
+            setTimeout(()=> el.remove(), 400);
+        }, 8000);
+    });
+
+    notSocket.on('chat_invite', function(data){
+        try{
+            const who = data.from_name || 'Quelqu\'un';
+            const title = data.chat_title || null;
+            // increment nav badge
+            window.chatInviteCount = (window.chatInviteCount || 0) + 1;
+            const badge = document.getElementById('nav-chats-badge');
+            if(badge){ badge.style.display = 'flex'; badge.textContent = window.chatInviteCount > 9 ? '9+' : String(window.chatInviteCount); }
+            // create persistent notification (requires manual dismiss)
             const el = document.createElement('div');
-            el.style.background = '#333';
+            el.style.background = '#007bff';
             el.style.color = '#fff';
             el.style.padding = '10px 14px';
             el.style.marginTop = '8px';
             el.style.borderRadius = '6px';
             el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            el.textContent = (data.message || 'Notification');
+            el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'space-between';
+            const chatLink = data.chat_id ? `/chats#chat_${data.chat_id}` : '/chats';
+            const left = document.createElement('div');
+            left.innerHTML = `<strong>${who}</strong> vous a envoyé une invitation${title?(' pour <em>'+title+'</em>'):''}.`;
+            const actions = document.createElement('div');
+            actions.style.display='flex'; actions.style.gap='8px';
+            const reply = document.createElement('a'); reply.href = chatLink; reply.style.color='#fff'; reply.style.textDecoration='underline'; reply.textContent='Répondre';
+            reply.addEventListener('click', ()=>{ // reduce badge count when user navigates
+                window.chatInviteCount = Math.max(0, (window.chatInviteCount||1)-1);
+                if(window.chatInviteCount===0) badge.style.display='none'; else badge.textContent = window.chatInviteCount>9?'9+':String(window.chatInviteCount);
+            });
+            const closeBtn = document.createElement('button'); closeBtn.textContent='✖'; closeBtn.style.background='rgba(255,255,255,0.12)'; closeBtn.style.border='none'; closeBtn.style.color='#fff'; closeBtn.style.borderRadius='6px'; closeBtn.style.padding='6px';
+            closeBtn.addEventListener('click', ()=>{ el.remove(); window.chatInviteCount = Math.max(0, (window.chatInviteCount||1)-1); if(window.chatInviteCount===0) badge.style.display='none'; else badge.textContent = window.chatInviteCount>9?'9+':String(window.chatInviteCount); });
+            actions.appendChild(reply); actions.appendChild(closeBtn);
+            el.appendChild(left); el.appendChild(actions);
+            // persistent (no auto remove)
             container.appendChild(el);
-            // auto remove
-            setTimeout(()=> {
-                el.style.transition = 'opacity 0.4s';
-                el.style.opacity = '0';
-                setTimeout(()=> el.remove(), 400);
-            }, 8000);
+        }catch(e){ console.log('invite toast error', e); }
+    });
+
+    // allow badge click to open chats
+    const chatsLink = document.getElementById('nav-chats-link');
+    if(chatsLink){ chatsLink.addEventListener('click', ()=>{ window.chatInviteCount = 0; const b = document.getElementById('nav-chats-badge'); if(b) b.style.display='none'; }); }
+}
+</script>
+
+<!-- Assistant modal -->
+<div id="assistant-modal" style="display:none; position:fixed; right:20px; bottom:220px; z-index:99999; width:360px; background:#fff; border-radius:10px; box-shadow:0 12px 40px rgba(0,0,0,0.15); padding:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>Assistant IA</strong><span id="assistant-close" style="cursor:pointer">✖</span></div>
+    <textarea id="assistant-question" placeholder="Posez votre question à l'IA" style="width:100%;height:120px;padding:8px;border:1px solid #eee;border-radius:6px"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+        <button id="assistant-send" style="flex:1;padding:8px;background:#ff7a18;border:none;color:#fff;border-radius:6px">Envoyer</button>
+        <button id="assistant-clear" style="padding:8px;background:#f1f1f1;border:none;border-radius:6px">Effacer</button>
+    </div>
+    <div id="assistant-response" style="margin-top:10px;max-height:220px;overflow:auto;background:#fafafa;padding:8px;border-radius:6px"></div>
+</div>
+
+<style>
+@media (max-width:700px) {
+  #assistant-toggle { bottom: 110px !important; left: 14px; }
+  #assistant-modal { right: 8px; bottom: 260px !important; width: calc(100% - 40px); max-width:360px; }
+  /* Center notifications on small screens for better visibility */
+  #site-notifications { left: 50% !important; right: auto !important; transform: translateX(-50%); width: calc(100% - 32px); max-width:480px; top: 12px !important; }
+  #site-notifications > div { margin-left: auto; margin-right: auto; }
+}
+</style>
+
+<script>
+// Assistant handlers (guarded, attach to both floating and top buttons)
+document.addEventListener('DOMContentLoaded', ()=>{
+    const assistantBtn = document.getElementById('assistant-btn');
+    const assistantBtnTop = document.getElementById('assistant-btn-top');
+    const assistantModal = document.getElementById('assistant-modal');
+    const assistantClose = document.getElementById('assistant-close');
+    const assistantSend = document.getElementById('assistant-send');
+    const assistantClear = document.getElementById('assistant-clear');
+    const assistantQuestion = document.getElementById('assistant-question');
+    const assistantResponse = document.getElementById('assistant-response');
+
+    function openAssistant(){ if (assistantModal) assistantModal.style.display = 'block'; }
+    function closeAssistant(){ if (assistantModal) assistantModal.style.display = 'none'; }
+
+    if (assistantBtn) assistantBtn.addEventListener('click', openAssistant);
+    if (assistantBtnTop) assistantBtnTop.addEventListener('click', openAssistant);
+    if (assistantClose) assistantClose.addEventListener('click', closeAssistant);
+    if (assistantClear) assistantClear.addEventListener('click', ()=> { assistantQuestion.value=''; assistantResponse.innerHTML=''; });
+
+    if (assistantSend) {
+        assistantSend.addEventListener('click', async ()=>{
+            const q = assistantQuestion.value.trim();
+            if (!q) return alert('Entrez une question');
+            assistantSend.disabled = true;
+            assistantResponse.innerHTML = 'En cours...';
+            try {
+                const res = await fetch('/assistant/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q})});
+                const data = await res.json();
+                if (data.ok) {
+                    assistantResponse.innerHTML = (data.response || '').replace(/\n/g,'<br>');
+                } else {
+                    assistantResponse.innerText = 'Erreur: ' + (data.error || '');
+                }
+            } catch (e) { assistantResponse.innerText = 'Erreur: ' + e }
+            assistantSend.disabled = false;
         });
     }
+});
 </script>
 </body>
 </html>

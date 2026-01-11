@@ -10,10 +10,23 @@
         {% for question in questions %}
         <div class="question">
             <h3>Question {{ loop.index }}</h3>
+            {% if question.image %}
+            <img src="{{ url_for('static', filename='uploads/' ~ question.image) }}" alt="Question image" style="max-width:100%;height:auto;margin-bottom:8px;">
+            {% endif %}
             <p>{{ question.question }}</p>
-            <input type="text" name="q_{{ question.id }}" required>
+            {% if question.answer_type == 'long' %}
+            <textarea name="q_{{ question.id }}" required rows="6" style="width:100%"></textarea>
+            {% else %}
+            <input type="text" name="q_{{ question.id }}" required style="width:100%;padding:8px;">
+            {% endif %}
         </div>
         {% endfor %}
+
+        <div class="form-options" style="margin-top:16px;">
+            <label><input type="checkbox" name="share_whatsapp" value="1"> Partager les résultats sur WhatsApp</label>
+            <label style="margin-left:12px;"><input type="checkbox" name="ask_ia" value="1"> Demander la correction par l'IA</label>
+        </div>
+
         <div class="submit-container">
             <button type="submit" class="submit-btn">Soumettre l'examen</button>
         </div>
@@ -22,7 +35,7 @@
 
 <script>
     // Rendre les données de l'examen disponibles en JS
-    const examData = {{ exam|tojson | safe }};
+    const examData = {{ exam | tojson }};
 
     document.getElementById('examForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -50,9 +63,21 @@
                 message += `   ${r.correct ? '✅ Correct' : '❌ Incorrect'}\n\n`;
             });
 
-            // Ouvrir WhatsApp avec le message
-            window.open(`https://wa.me/?text=${encodeURIComponent(message)}`);
-            
+            // Si l'IA a retourné un feedback, l'ajouter
+            if (result.ai_feedback) {
+                message += `🔍 Feedback IA:\n`;
+                result.ai_feedback.forEach((fb, i) => {
+                    message += `${i+1}. ${fb}\n`;
+                });
+                // afficher aussi en popup léger
+                alert('Feedback IA:\n' + result.ai_feedback.join('\n'));
+            }
+
+            // Si l'utilisateur a demandé de partager, ouvrir WhatsApp
+            if (result.share_whatsapp) {
+                window.open(`https://wa.me/?text=${encodeURIComponent(message)}`);
+            }
+
             // Rediriger vers la page des examens
             window.location.href = '{{ url_for("exams") }}';
             

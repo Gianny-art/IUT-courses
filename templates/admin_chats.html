@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include '_admin_nav.html' %}
+<div class="container" style="max-width:1100px;margin:20px auto">
+    <h2>Modération des chats</h2>
+    <div id="chats-admin" style="margin-top:12px"></div>
+</div>
+
+<!-- Modal participants -->
+<div id="admin-participants-modal" style="display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:480px;background:#fff;padding:18px;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.12)">
+    <h3>Participants</h3>
+    <div id="participants-list"></div>
+    <div style="text-align:right;margin-top:12px"><button class="btn" id="participants-close">Fermer</button></div>
+</div>
+
+<script>
+async function loadAdminChats(){
+    const res = await fetch('/admin/api/chats');
+    const data = await res.json();
+    const el = document.getElementById('chats-admin');
+    el.innerHTML = '';
+    data.forEach(c=>{
+        const d = document.createElement('div'); d.style.border='1px solid #eee'; d.style.padding='8px'; d.style.marginBottom='8px';
+        d.innerHTML = `<strong>${c.title || ('Chat #' + c.id)}</strong> — participants: ${c.participants} <div style="float:right"><button onclick="manageChat(${c.id})" class="btn">Gérer</button> <button onclick="deleteChat(${c.id})" class="btn">Supprimer</button></div>`;
+        el.appendChild(d);
+    });
+}
+async function deleteChat(id){
+    if(!confirm('Supprimer le chat et tous ses messages ?')) return;
+    const res = await fetch(`/admin/chat/${id}/delete`, {method:'POST'});
+    const j = await res.json();
+    if(j.ok) loadAdminChats();
+}
+async function manageChat(id){
+    // fetch participants
+    const res = await fetch(`/admin/api/chat/${id}/participants`);
+    const data = await res.json();
+    const list = document.getElementById('participants-list'); list.innerHTML = '';
+    data.forEach(p=>{
+        const el = document.createElement('div'); el.style.padding='6px'; el.style.border='1px solid #eee'; el.style.marginBottom='6px';
+        el.innerHTML = `${p.name} <div style="float:right"><button class='btn' onclick="removeParticipant(${id}, ${p.id})">Retirer</button></div>`;
+        list.appendChild(el);
+    });
+    document.getElementById('admin-participants-modal').style.display='block';
+}
+async function removeParticipant(chatId, userId){
+    if(!confirm('Retirer cet utilisateur ?')) return;
+    const res = await fetch(`/admin/chat/${chatId}/remove_participant`, {method:'POST', body: new URLSearchParams({user_id: userId})});
+    const j = await res.json();
+    if(j.ok){ manageChat(chatId); loadAdminChats(); }
+}
+document.getElementById('participants-close').addEventListener('click', ()=> document.getElementById('admin-participants-modal').style.display='none');
+loadAdminChats();
+</script>
+{% endblock %}

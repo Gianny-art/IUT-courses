@@ -1,0 +1,508 @@
+{
+  "count": 73,
+  "inserts_preview": [
+    {
+      "id": 11,
+      "nom": "Awounang Tsafack Ersu",
+      "prenom": "Obama",
+      "email": "ersutsafack@gmail.com",
+      "matricule": "2026IUT0011",
+      "password": "2026iutGI@011",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (11, 'Awounang Tsafack Ersu', 'Obama', '2026IUT0011', 'ersutsafack@gmail.com', '2026iutGI@011', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 12,
+      "nom": "Banfogha Berinyuy",
+      "prenom": "Anass",
+      "email": "banfoghaanass@gmail.com",
+      "matricule": "2026IUT0012",
+      "password": "2026iutGI@012",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (12, 'Banfogha Berinyuy', 'Anass', '2026IUT0012', 'banfoghaanass@gmail.com', '2026iutGI@012', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 13,
+      "nom": "D.Meli Teikeu",
+      "prenom": "Elroy",
+      "email": "elroymeli12@gmail.com",
+      "matricule": "2026IUT0013",
+      "password": "2026iutGI@013",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (13, 'D.Meli Teikeu', 'Elroy', '2026IUT0013', 'elroymeli12@gmail.com', '2026iutGI@013', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 14,
+      "nom": "Djofang Kwatcho",
+      "prenom": "Joyce",
+      "email": "joycedjofang52@gmail.com",
+      "matricule": "2026IUT0014",
+      "password": "2026iutGI@014",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (14, 'Djofang Kwatcho', 'Joyce', '2026IUT0014', 'joycedjofang52@gmail.com', '2026iutGI@014', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 15,
+      "nom": "Djuikom Gnokam Brigitte",
+      "prenom": "Merveille",
+      "email": "gnokammerveille@gmail.com",
+      "matricule": "2026IUT0015",
+      "password": "2026iutGI@015",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (15, 'Djuikom Gnokam Brigitte', 'Merveille', '2026IUT0015', 'gnokammerveille@gmail.com', '2026iutGI@015', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 16,
+      "nom": "Dongmene Binda Ange",
+      "prenom": "Donald",
+      "email": "bindadonald@gmail.com",
+      "matricule": "2026IUT0016",
+      "password": "2026iutGI@016",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (16, 'Dongmene Binda Ange', 'Donald', '2026IUT0016', 'bindadonald@gmail.com', '2026iutGI@016', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 17,
+      "nom": "Ekoume Tchokouassi Romane",
+      "prenom": "Wilfrid",
+      "email": "ekoumetchokouassi@gmail.com",
+      "matricule": "2026IUT0017",
+      "password": "2026iutGI@017",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (17, 'Ekoume Tchokouassi Romane', 'Wilfrid', '2026IUT0017', 'ekoumetchokouassi@gmail.com', '2026iutGI@017', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 18,
+      "nom": "El Kabirou Moubarak",
+      "prenom": "Ndie",
+      "email": "ekabir689@gmail.com",
+      "matricule": "2026IUT0018",
+      "password": "2026iutGI@018",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (18, 'El Kabirou Moubarak', 'Ndie', '2026IUT0018', 'ekabir689@gmail.com', '2026iutGI@018', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 19,
+      "nom": "Essome Etame Miguel",
+      "prenom": "Jovial",
+      "email": "miguelessome17@gmail.com",
+      "matricule": "2026IUT0019",
+      "password": "2026iutGI@019",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (19, 'Essome Etame Miguel', 'Jovial', '2026IUT0019', 'miguelessome17@gmail.com', '2026iutGI@019', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 20,
+      "nom": "Fogue Fokam",
+      "prenom": "Junior",
+      "email": "juniorfokam54@gmail.com",
+      "matricule": "2026IUT0020",
+      "password": "2026iutGI@020",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (20, 'Fogue Fokam', 'Junior', '2026IUT0020', 'juniorfokam54@gmail.com', '2026iutGI@020', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 21,
+      "nom": "Fogue Poka Hens",
+      "prenom": "Levy",
+      "email": "henspoka22@gmail.com",
+      "matricule": "2026IUT0021",
+      "password": "2026iutGI@021",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (21, 'Fogue Poka Hens', 'Levy', '2026IUT0021', 'henspoka22@gmail.com', '2026iutGI@021', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 22,
+      "nom": "Fosso Nguemo Nelson",
+      "prenom": "Bilice",
+      "email": "nelsonfosso910@gmail.com",
+      "matricule": "2026IUT0022",
+      "password": "2026iutGI@022",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (22, 'Fosso Nguemo Nelson', 'Bilice', '2026IUT0022', 'nelsonfosso910@gmail.com', '2026iutGI@022', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 23,
+      "nom": "Fosso Saah Emma Aggée",
+      "prenom": "Luther",
+      "email": "aggeefosso@gmail.com",
+      "matricule": "2026IUT0023",
+      "password": "2026iutGI@023",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (23, 'Fosso Saah Emma Aggée', 'Luther', '2026IUT0023', 'aggeefosso@gmail.com', '2026iutGI@023', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 24,
+      "nom": "Fosso Sob Marcelin",
+      "prenom": "Ortega",
+      "email": "ortegaeditor@gmail.com",
+      "matricule": "2026IUT0024",
+      "password": "2026iutGI@024",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (24, 'Fosso Sob Marcelin', 'Ortega', '2026IUT0024', 'ortegaeditor@gmail.com', '2026iutGI@024', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 25,
+      "nom": "Gnokam Sindze Merveille",
+      "prenom": "Lena",
+      "email": "ismaelabicange@gmail.com",
+      "matricule": "2026IUT0025",
+      "password": "2026iutGI@025",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (25, 'Gnokam Sindze Merveille', 'Lena', '2026IUT0025', 'ismaelabicange@gmail.com', '2026iutGI@025', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 26,
+      "nom": "Godwe Yanda",
+      "prenom": "Florian",
+      "email": "maloudaflorian19@gmail.com",
+      "matricule": "2026IUT0026",
+      "password": "2026iutGI@026",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (26, 'Godwe Yanda', 'Florian', '2026IUT0026', 'maloudaflorian19@gmail.com', '2026iutGI@026', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 27,
+      "nom": "Kamdem Tchomtchoua Sorel",
+      "prenom": "Landry",
+      "email": "kamdemlandrysorel@gmail.com",
+      "matricule": "2026IUT0027",
+      "password": "2026iutGI@027",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (27, 'Kamdem Tchomtchoua Sorel', 'Landry', '2026IUT0027', 'kamdemlandrysorel@gmail.com', '2026iutGI@027', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 28,
+      "nom": "Kamgaing Tiagno",
+      "prenom": "Jordan",
+      "email": "kamgaingjordan2024@icloud.com",
+      "matricule": "2026IUT0028",
+      "password": "2026iutGI@028",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (28, 'Kamgaing Tiagno', 'Jordan', '2026IUT0028', 'kamgaingjordan2024@icloud.com', '2026iutGI@028', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 29,
+      "nom": "Kamogne Tedonnang",
+      "prenom": "Torres",
+      "email": "tkamogne@gmail.com",
+      "matricule": "2026IUT0029",
+      "password": "2026iutGI@029",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (29, 'Kamogne Tedonnang', 'Torres', '2026IUT0029', 'tkamogne@gmail.com', '2026iutGI@029', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 30,
+      "nom": "Ken Toukem Pulcherie",
+      "prenom": "Wonder",
+      "email": "wonderpulcherie@gmail.com",
+      "matricule": "2026IUT0030",
+      "password": "2026iutGI@030",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (30, 'Ken Toukem Pulcherie', 'Wonder', '2026IUT0030', 'wonderpulcherie@gmail.com', '2026iutGI@030', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 31,
+      "nom": "Kenfack Toukeng",
+      "prenom": "Manuella",
+      "email": "manuellakenfack55@gmail.com",
+      "matricule": "2026IUT0031",
+      "password": "2026iutGI@031",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (31, 'Kenfack Toukeng', 'Manuella', '2026IUT0031', 'manuellakenfack55@gmail.com', '2026iutGI@031', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 32,
+      "nom": "Kengne Kamdem Fotso Brayan",
+      "prenom": "Zephirin",
+      "email": "kengneb123@icloud.com",
+      "matricule": "2026IUT0032",
+      "password": "2026iutGI@032",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (32, 'Kengne Kamdem Fotso Brayan', 'Zephirin', '2026IUT0032', 'kengneb123@icloud.com', '2026iutGI@032', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 33,
+      "nom": "Kianpi Tsakou Stève",
+      "prenom": "Junior",
+      "email": "juniorkianpi@gmail.com",
+      "matricule": "2026IUT0033",
+      "password": "2026iutGI@033",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (33, 'Kianpi Tsakou Stève', 'Junior', '2026IUT0033', 'juniorkianpi@gmail.com', '2026iutGI@033', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 34,
+      "nom": "Kom Silatchom",
+      "prenom": "Marc-Axel",
+      "email": "marckom500@gmail.com",
+      "matricule": "2026IUT0034",
+      "password": "2026iutGI@034",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (34, 'Kom Silatchom', 'Marc-Axel', '2026IUT0034', 'marckom500@gmail.com', '2026iutGI@034', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 35,
+      "nom": "Komguem Ornella",
+      "prenom": "Teddy",
+      "email": "komguemornella@gmail.com",
+      "matricule": "2026IUT0035",
+      "password": "2026iutGI@035",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (35, 'Komguem Ornella', 'Teddy', '2026IUT0035', 'komguemornella@gmail.com', '2026iutGI@035', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 36,
+      "nom": "Lontio Tsamene Chirac",
+      "prenom": "Kessel",
+      "email": "lontiokessel@gmail.com",
+      "matricule": "2026IUT0036",
+      "password": "2026iutGI@036",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (36, 'Lontio Tsamene Chirac', 'Kessel', '2026IUT0036', 'lontiokessel@gmail.com', '2026iutGI@036', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 37,
+      "nom": "M'Pesse Messi Jacques",
+      "prenom": "Stephane",
+      "email": "stephanemessi42@gmail.com",
+      "matricule": "2026IUT0037",
+      "password": "2026iutGI@037",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (37, 'M''Pesse Messi Jacques', 'Stephane', '2026IUT0037', 'stephanemessi42@gmail.com', '2026iutGI@037', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 38,
+      "nom": "Maffa Kouda",
+      "prenom": "Flora",
+      "email": "maffakouda@gmail.com",
+      "matricule": "2026IUT0038",
+      "password": "2026iutGI@038",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (38, 'Maffa Kouda', 'Flora', '2026IUT0038', 'maffakouda@gmail.com', '2026iutGI@038', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 39,
+      "nom": "Mamdem Pouna Corrine",
+      "prenom": "Vannelle",
+      "email": "vanellepouna@gmail.com",
+      "matricule": "2026IUT0039",
+      "password": "2026iutGI@039",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (39, 'Mamdem Pouna Corrine', 'Vannelle', '2026IUT0039', 'vanellepouna@gmail.com', '2026iutGI@039', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 40,
+      "nom": "Massock Serena",
+      "prenom": "Carelle",
+      "email": "massockserenacarelle@gmail.com",
+      "matricule": "2026IUT0040",
+      "password": "2026iutGI@040",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (40, 'Massock Serena', 'Carelle', '2026IUT0040', 'massockserenacarelle@gmail.com', '2026iutGI@040', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 41,
+      "nom": "Mbiangang Mbatchou",
+      "prenom": "Danielle",
+      "email": "macairemacairembatchou@gmail.com",
+      "matricule": "2026IUT0041",
+      "password": "2026iutGI@041",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (41, 'Mbiangang Mbatchou', 'Danielle', '2026IUT0041', 'macairemacairembatchou@gmail.com', '2026iutGI@041', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 42,
+      "nom": "Mboupmo Neguem Martial",
+      "prenom": "Joël",
+      "email": "joelneguem@gmail.com",
+      "matricule": "2026IUT0042",
+      "password": "2026iutGI@042",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (42, 'Mboupmo Neguem Martial', 'Joël', '2026IUT0042', 'joelneguem@gmail.com', '2026iutGI@042', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 43,
+      "nom": "Mebou Keungni",
+      "prenom": "Sorelle",
+      "email": "keungnisorelle@gmail.com",
+      "matricule": "2026IUT0043",
+      "password": "2026iutGI@043",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (43, 'Mebou Keungni', 'Sorelle', '2026IUT0043', 'keungnisorelle@gmail.com', '2026iutGI@043', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 44,
+      "nom": "Medonjio Tenang",
+      "prenom": "Jodeanas",
+      "email": "medonjiojodeanas@gmail.com",
+      "matricule": "2026IUT0044",
+      "password": "2026iutGI@044",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (44, 'Medonjio Tenang', 'Jodeanas', '2026IUT0044', 'medonjiojodeanas@gmail.com', '2026iutGI@044', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 45,
+      "nom": "Megaptche Feudju Hans",
+      "prenom": "Mathieu",
+      "email": "megaptchehansmathieu@gmail.com",
+      "matricule": "2026IUT0045",
+      "password": "2026iutGI@045",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (45, 'Megaptche Feudju Hans', 'Mathieu', '2026IUT0045', 'megaptchehansmathieu@gmail.com', '2026iutGI@045', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 46,
+      "nom": "Mewe Wouebe",
+      "prenom": "Denise",
+      "email": "wouebemewe@gmail.com",
+      "matricule": "2026IUT0046",
+      "password": "2026iutGI@046",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (46, 'Mewe Wouebe', 'Denise', '2026IUT0046', 'wouebemewe@gmail.com', '2026iutGI@046', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 47,
+      "nom": "Motio Sinou Pascale",
+      "prenom": "Saurelle",
+      "email": "motiosaurelle2@gmail.com",
+      "matricule": "2026IUT0047",
+      "password": "2026iutGI@047",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (47, 'Motio Sinou Pascale', 'Saurelle', '2026IUT0047', 'motiosaurelle2@gmail.com', '2026iutGI@047', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 48,
+      "nom": "Motouom Mba Isabelle",
+      "prenom": "Sandra",
+      "email": "motouomsandra@gmail.com",
+      "matricule": "2026IUT0048",
+      "password": "2026iutGI@048",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (48, 'Motouom Mba Isabelle', 'Sandra', '2026IUT0048', 'motouomsandra@gmail.com', '2026iutGI@048', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 49,
+      "nom": "Motso Simo Paloma",
+      "prenom": "Batista",
+      "email": "palomamotso@gmail.com",
+      "matricule": "2026IUT0049",
+      "password": "2026iutGI@049",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (49, 'Motso Simo Paloma', 'Batista', '2026IUT0049', 'palomamotso@gmail.com', '2026iutGI@049', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 50,
+      "nom": "Nanseu Saming David",
+      "prenom": "Ronel",
+      "email": "davidronelnanseusaming@gmail.com",
+      "matricule": "2026IUT0050",
+      "password": "2026iutGI@050",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (50, 'Nanseu Saming David', 'Ronel', '2026IUT0050', 'davidronelnanseusaming@gmail.com', '2026iutGI@050', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 51,
+      "nom": "Ndamzo Ngassam Yvan",
+      "prenom": "Franck",
+      "email": "yndamz@gmail.com",
+      "matricule": "2026IUT0051",
+      "password": "2026iutGI@051",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (51, 'Ndamzo Ngassam Yvan', 'Franck', '2026IUT0051', 'yndamz@gmail.com', '2026iutGI@051', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 52,
+      "nom": "Ngouane Fouegouo Sthanis",
+      "prenom": "Ronel",
+      "email": "nglamembrane@gmail.com",
+      "matricule": "2026IUT0052",
+      "password": "2026iutGI@052",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (52, 'Ngouane Fouegouo Sthanis', 'Ronel', '2026IUT0052', 'nglamembrane@gmail.com', '2026iutGI@052', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 53,
+      "nom": "Nguemo Patio",
+      "prenom": "Abdias",
+      "email": "abdiasnguemo@gmail.com",
+      "matricule": "2026IUT0053",
+      "password": "2026iutGI@053",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (53, 'Nguemo Patio', 'Abdias', '2026IUT0053', 'abdiasnguemo@gmail.com', '2026iutGI@053', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 54,
+      "nom": "Nguepnang Tene Valery",
+      "prenom": "Christian",
+      "email": "nguepnangtene@gmail.com",
+      "matricule": "2026IUT0054",
+      "password": "2026iutGI@054",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (54, 'Nguepnang Tene Valery', 'Christian', '2026IUT0054', 'nguepnangtene@gmail.com', '2026iutGI@054', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 55,
+      "nom": "Nguiejouo Chenkep Lynsha",
+      "prenom": "Zita",
+      "email": "nguiejouochenkep@gmail.com",
+      "matricule": "2026IUT0055",
+      "password": "2026iutGI@055",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (55, 'Nguiejouo Chenkep Lynsha', 'Zita', '2026IUT0055', 'nguiejouochenkep@gmail.com', '2026iutGI@055', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 56,
+      "nom": "Njeunga Nyakam Alvine",
+      "prenom": "Carmelle",
+      "email": "alvinenjeunga7@gmail.com",
+      "matricule": "2026IUT0056",
+      "password": "2026iutGI@056",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (56, 'Njeunga Nyakam Alvine', 'Carmelle', '2026IUT0056', 'alvinenjeunga7@gmail.com', '2026iutGI@056', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 57,
+      "nom": "Njofang Njinkeu Joresse",
+      "prenom": "Landry",
+      "email": "landrynjinkeu1@gmail.com",
+      "matricule": "2026IUT0057",
+      "password": "2026iutGI@057",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (57, 'Njofang Njinkeu Joresse', 'Landry', '2026IUT0057', 'landrynjinkeu1@gmail.com', '2026iutGI@057', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 58,
+      "nom": "Njoya Faissal",
+      "prenom": "Aboubakar",
+      "email": "ninhonjoya@icloud.com",
+      "matricule": "2026IUT0058",
+      "password": "2026iutGI@058",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (58, 'Njoya Faissal', 'Aboubakar', '2026IUT0058', 'ninhonjoya@icloud.com', '2026iutGI@058', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 59,
+      "nom": "Noumsi Noumsi Ange",
+      "prenom": "Adrien",
+      "email": "angenoumsi4@gmail.com",
+      "matricule": "2026IUT0059",
+      "password": "2026iutGI@059",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (59, 'Noumsi Noumsi Ange', 'Adrien', '2026IUT0059', 'angenoumsi4@gmail.com', '2026iutGI@059', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    },
+    {
+      "id": 60,
+      "nom": "Nounamo Manga Chris",
+      "prenom": "Gerald",
+      "email": "chris552352@gmail.com",
+      "matricule": "2026IUT0060",
+      "password": "2026iutGI@060",
+      "sql": "INSERT INTO users (id, nom, prenom, matricule, email, password, role, filiere, photo, age, sports, autres, has_paid, pending_payment) VALUES (60, 'Nounamo Manga Chris', 'Gerald', '2026IUT0060', 'chris552352@gmail.com', '2026iutGI@060', 'student', 'Informatique', '', NULL, '', '', 0, 0);"
+    }
+  ],
+  "problems": [
+    {
+      "original": "abdiasnguemo@gmail.comn",
+      "corrected": "abdiasnguemo@gmail.com"
+    }
+  ],
+  "no_email": [
+    {
+      "nom": "CHIENANG TCHANKIO JOEL ROLAND",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "DOUANLA Khamel Orlan",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "FOKO MANG Christ Brayant",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "KANA KENMENE Laura Princesse",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "KUETE TATSA DJAMEL ANDERSON",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "SAMO DJOMO Manuella Erika",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "TCHEUMAGA MINTA MARIAH MAYBELLINE",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "TENE KUETCHE Ulrich Joel",
+      "prenom": "",
+      "email": null
+    },
+    {
+      "nom": "WAMBO A NYAM BRYAN",
+      "prenom": "",
+      "email": null
+    }
+  ]
+}

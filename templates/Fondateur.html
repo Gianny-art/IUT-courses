@@ -1,60 +1,42 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <title>Gianny Foapa — Fondateur de IUT-courses</title>
-  <meta name="description" content="Gianny Foapa — Fondateur de IUT-courses. Entrepreneur et développeur spécialisé en e-learning.">
-    <!-- Schema.org pour les moteurs de recherche -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Gianny Foapa",
-    "jobTitle": "Fondateur de IUT-courses",
-    "image": "https://iut-courses.onrender.com/static/uploads/IMG-20250912-WA0023.jpg",
-    "url": "https://iut-courses.onrender.com/fondateur.html",
-    "sameAs": [
-      "www.linkedin.com/in/gianny-foapa-759108380",
-      "https://about.me/foapa"
-    ],
-    "worksFor": {
-      "@type": "Organization",
-      "name": "IUT-courses",
-      "url": "https://iut-courses.onrender.com"
-    },
-    "description": "Gianny Foapa est le fondateur de IUT-courses, une plateforme d'apprentissage en ligne axée sur l'éducation technique."
-  }
-  </script>
-  <!-- Fin Schema -->
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;max-width:900px;margin:30px auto;padding:0 15px}
-    .hero{display:flex;gap:20px;align-items:center}
-    .hero img{width:160px;height:120px;object-fit:cover;border-radius:8px}
-  </style>
-</head>
-<body>
-  <a href="/">Accueil</a>
-  <h1>Gianny Foapa — Fondateur de IUT-courses</h1>
-  <div class="hero">
-    <img src="https://iut-courses.onrender.com/static/uploads/IMG-20250912-WA0023.jpg" alt="Photo de Gianny Foapa" height="120px">
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width:900px;margin:20px auto;padding:18px;background:#fff;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.06)">
+  <div style="display:flex;gap:20px;align-items:center">
+    <img src="{{ url_for('static', filename='uploads/IMG-20250912-WA0023.jpg') }}" alt="Gianny Foapa" style="width:160px;height:160px;object-fit:cover;border-radius:12px;border:4px solid #f5f8ff">
     <div>
-      <p><strong>Gianny Foapa</strong> — Fondateur de <strong>IUT-courses</strong>. Entrepreneur et développeur spécialisé en e-learning.</p>
-      <p><a href="www.linkedin.com/in/gianny-foapa-759108380">LinkedIn</a> • <a href="https://about.me/foapa">A propos</a></p>
+      <h1 style="margin:0;color:#003366">Gianny Foapa</h1>
+      <p style="margin:6px 0 0 0;color:#007bff;font-weight:600">Fondateur — IUT-courses</p>
+      <p style="margin-top:10px;color:#444;max-width:640px">Entrepreneur et développeur passionné par l'éducation numérique et les technologies accessibles à tous. Gianny a lancé IUT-courses pour simplifier l'apprentissage technique, proposer des ressources structurées et rapprocher les étudiants des formateurs.</p>
+      <div style="margin-top:10px;display:flex;gap:10px">
+        <a class="btn" href="mailto:giannyfoapa@gmail.com" style="background:#007bff;color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none">Contacter</a>
+        <a class="btn" href="https://www.linkedin.com/in/gianny-foapa-759108380" target="_blank" style="background:#0a66c2;color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none">LinkedIn</a>
+      </div>
     </div>
   </div>
 
-  <section>
-    <h2>Biographie</h2>
-    <p>Gianny Foapa est le fondateur de <strong>IUT-courses</strong>      À propos — Gianny Foapa
-est le fondateur de IUT-courses à l'age de 16ans,  une plateforme dédiée à l’apprentissage et aux ressources pour les étudiants et professionnels. Ingénieux et orienté résultats, Gianny a conçu la plateforme pour rendre l’éducation technique accessible, pratique et moderne. Il supervise la stratégie produit, le développement et les partenariats, et partage régulièrement des articles et tutoriels pour aider les étudiants à progresser.
-
-Depuis le lancement, Gianny se concentre sur la qualité du contenu, l’optimisation SEO et l’expérience utilisateur. Pour le contacter : [email] ou suivre ses profils LinkedIn / Instagram (liens ci-dessous).</p>
-  </section>
+  <hr style="margin:18px 0;border:none;border-top:1px solid #f1f5fb">
 
   <section>
-    <h2>Contact</h2>
-    <p>Email : giannyfoapa@gmail.com</p>
+    <h2 style="color:#003366">Biographie</h2>
+    <p style="color:#555">Gianny Foapa a fondé <strong>IUT-courses</strong> pour rendre l'éducation technique plus accessible et pratique. Depuis le lancement, il se concentre sur la pédagogie, la qualité du contenu, et l'expérience utilisateur. Il partage régulièrement tutoriels, articles et projets open-source pour aider la communauté étudiante.</p>
   </section>
-</body>
-</html>
+
+  <section style="margin-top:12px">
+    <h2 style="color:#003366">Vision</h2>
+    <p style="color:#555">Créer des outils simples, efficaces et gratuits (ou à faible coût) pour permettre à chaque étudiant de progresser, acquérir des compétences pratiques et trouver des opportunités professionnelles.</p>
+  </section>
+
+  <section style="margin-top:12px">
+    <h2 style="color:#003366">Suivez</h2>
+    <p style="color:#555">Email: <a href="mailto:giannyfoapa@gmail.com">giannyfoapa@gmail.com</a></p>
+    <p style="color:#555">LinkedIn: <a href="https://www.linkedin.com/in/gianny-foapa-759108380" target="_blank">profil LinkedIn</a></p>
+  </section>
+
+  <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+    <a href="{{ url_for('courses') }}" class="btn" style="background:linear-gradient(90deg,#007bff,#00c6ff);color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none">Découvrir les Cours</a>
+    <a href="{{ url_for('formations') }}" class="btn" style="background:#003366;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none">Formations</a>
+  </div>
+
+</div>
+{% endblock %}

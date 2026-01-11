@@ -1,0 +1,426 @@
+{
+  "total_checked": 185,
+  "bad_count": 84,
+  "bad": [
+    {
+      "id": 93,
+      "nom": "Ymele Ymele Jospin",
+      "prenom": "Thales Dut - Gi - S"
+    },
+    {
+      "id": 94,
+      "nom": "Gateu Tchuinning Franck",
+      "prenom": "Adrien Dut - Gi - S"
+    },
+    {
+      "id": 95,
+      "nom": "Tatmen Keukwamuriel Le",
+      "prenom": "Prince Dut - Gi - S"
+    },
+    {
+      "id": 96,
+      "nom": "Noubissi Emmanuel Tresor",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 97,
+      "nom": "Teyanou Yves Landry",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 98,
+      "nom": "Sonfack Acheyghiselain Miguel",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 99,
+      "nom": "Ymele Cabrel Dut",
+      "prenom": "- Gi - S"
+    },
+    {
+      "id": 100,
+      "nom": "Mayou Nchare Fifenmohamed",
+      "prenom": "Shawky Dut - Gi - S"
+    },
+    {
+      "id": 101,
+      "nom": "Tsotsuang Kougoum Ange",
+      "prenom": "Maël Dut - Gi - S"
+    },
+    {
+      "id": 102,
+      "nom": "Simo Fonkou Ange",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 103,
+      "nom": "Simo Ngassamnathland Clavert",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 104,
+      "nom": "Tchoutchui Ndjassp Rahim",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 105,
+      "nom": "Tedjon Minkan Diane",
+      "prenom": "Dut - Gi - S Dianetedjon Gmal Com"
+    },
+    {
+      "id": 106,
+      "nom": "Mathum Kamwa Christabelle",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 107,
+      "nom": "Fotso Kengne Ange",
+      "prenom": "Gloria Dut - Gi - S"
+    },
+    {
+      "id": 108,
+      "nom": "Fotso Alain Pierre",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 109,
+      "nom": "Mwafo Kamdoum Keddy",
+      "prenom": "Marquez Dut - Gi - S"
+    },
+    {
+      "id": 110,
+      "nom": "Kemuelgod-Hand Rhema Dut",
+      "prenom": "- Gi - S"
+    },
+    {
+      "id": 111,
+      "nom": "Tsobeng Ndongnang Stevine",
+      "prenom": "Florida Dut - Gi - S"
+    },
+    {
+      "id": 112,
+      "nom": "Dany Laure Tchouassi",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 113,
+      "nom": "Tagne Paule Clémence",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 114,
+      "nom": "Souep Fodouophemerick Jordan",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 115,
+      "nom": "Yankam Ntchatchouang Gloire",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 116,
+      "nom": "Peupomssi Talla Elisa",
+      "prenom": "Leynora Dut - Gi - S"
+    },
+    {
+      "id": 117,
+      "nom": "Lekobou Sawang Ariane",
+      "prenom": "Varelle Dut - Gi - S"
+    },
+    {
+      "id": 118,
+      "nom": "Kengne Fotsichancy Michelle",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 119,
+      "nom": "Mamto Kengne Noëlle",
+      "prenom": "Chanelle Dut - Gi - S"
+    },
+    {
+      "id": 120,
+      "nom": "Kaptué Kameny Jane",
+      "prenom": "Chloé Dut - Gi - S"
+    },
+    {
+      "id": 121,
+      "nom": "Massop Malamou Maxime",
+      "prenom": "Grace Dut - Gi - S"
+    },
+    {
+      "id": 122,
+      "nom": "Nana Leukeu Leslie",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 123,
+      "nom": "Keou Ngombe Joyce",
+      "prenom": "Emmanuel Dut - Gi - S"
+    },
+    {
+      "id": 124,
+      "nom": "Kamga Christian Aime",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 125,
+      "nom": "Djomou Lowe Hans",
+      "prenom": "Valdain Dut - Gi - S"
+    },
+    {
+      "id": 126,
+      "nom": "Melinga Frank Anaël",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 127,
+      "nom": "Tedongmo Tenefoh Franck",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 128,
+      "nom": "Nguefack Tatangmo Evans",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 129,
+      "nom": "Tezem Divane Dut",
+      "prenom": "- Gi - S"
+    },
+    {
+      "id": 130,
+      "nom": "Teffe Kamga Jeff",
+      "prenom": "Brayan Dut - Gi - S"
+    },
+    {
+      "id": 131,
+      "nom": "Nkamba Zie Brandon",
+      "prenom": "Junior Dut - Gi - S"
+    },
+    {
+      "id": 132,
+      "nom": "Sikati Fotso Alfred",
+      "prenom": "Evra Dut - Gi - S"
+    },
+    {
+      "id": 133,
+      "nom": "Nde Sussu Schoroon",
+      "prenom": "Edmond Dut - Gi - S"
+    },
+    {
+      "id": 134,
+      "nom": "Nana Merveille Lena",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 135,
+      "nom": "Tetsassi Nguietsidominique Troni",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 136,
+      "nom": "Kom Kommegne Michèle",
+      "prenom": "Flore Dut - Gi - S"
+    },
+    {
+      "id": 137,
+      "nom": "Fankeng Tene Erika",
+      "prenom": "Lauriane Dut - Gi - S"
+    },
+    {
+      "id": 138,
+      "nom": "Tekadam Metiegam Lyne",
+      "prenom": "Joyce Dut - Gi - S"
+    },
+    {
+      "id": 139,
+      "nom": "Kuete Fokoung Mike",
+      "prenom": "Mylord Dut - Gi - S"
+    },
+    {
+      "id": 140,
+      "nom": "Souwanguigue Joel Dut",
+      "prenom": "- Gi - S"
+    },
+    {
+      "id": 141,
+      "nom": "Motouom Mba Isabelle",
+      "prenom": "Sandra Dut - Gi - S"
+    },
+    {
+      "id": 142,
+      "nom": "Atewo Nze Danielle",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 143,
+      "nom": "Foga Kapche Jerry",
+      "prenom": "Othniel Dut - Gi - S"
+    },
+    {
+      "id": 144,
+      "nom": "Fadimatou Garba Dut",
+      "prenom": "- Gi - S"
+    },
+    {
+      "id": 145,
+      "nom": "Sabang Domeni Etienne",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 146,
+      "nom": "Tchoupou Steave Divine",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 147,
+      "nom": "Fohm Simo Bryan",
+      "prenom": "Andel Dut - Gi - S"
+    },
+    {
+      "id": 148,
+      "nom": "Fozi Alado Miguel",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 149,
+      "nom": "Tiessom Deugoue Franck",
+      "prenom": "Dimitri Dut - Gi - S"
+    },
+    {
+      "id": 150,
+      "nom": "Fokam Tingwo Pio",
+      "prenom": "Vianney Dut - Gi - S"
+    },
+    {
+      "id": 151,
+      "nom": "Nzesso Famkem Jordan",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 152,
+      "nom": "Tuekam Tasse Alfred",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 153,
+      "nom": "Choumkeu Yapna Rolly",
+      "prenom": "Stephane Dut - Gi - S"
+    },
+    {
+      "id": 154,
+      "nom": "Daghela Wabo Wilfried",
+      "prenom": "Durand Dut - Gi - S"
+    },
+    {
+      "id": 155,
+      "nom": "Djoko Youmbi Girex",
+      "prenom": "Fidele Dut - Gi - S"
+    },
+    {
+      "id": 156,
+      "nom": "Djoffa Fangang Ludovic",
+      "prenom": "Grandet Dut - Gi - S"
+    },
+    {
+      "id": 157,
+      "nom": "Editi Assoumou Assoumou",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 158,
+      "nom": "Ebelle Faith Eitel",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 159,
+      "nom": "Fankem Fankem Patrick",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 160,
+      "nom": "Fotso Kaptue Brayan",
+      "prenom": "Steve Dut - Gi - S"
+    },
+    {
+      "id": 161,
+      "nom": "Ghomte Tamgho Franck",
+      "prenom": "Gabriel Dut - Gi - S"
+    },
+    {
+      "id": 162,
+      "nom": "Fouodji Tiombou Eugenio",
+      "prenom": "El Pacificador Dut - Gi - S"
+    },
+    {
+      "id": 163,
+      "nom": "Heukelong Ngambia Mayeul",
+      "prenom": "Parfait Dut - Gi - S"
+    },
+    {
+      "id": 164,
+      "nom": "Hamat Hamadjoda Daoudou",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 165,
+      "nom": "Kamdem Kambou Maguy",
+      "prenom": "Lucresse Dut - Gi - S"
+    },
+    {
+      "id": 166,
+      "nom": "Kameni Yetembe William",
+      "prenom": "Armel Dut - Gi - S"
+    },
+    {
+      "id": 167,
+      "nom": "Kemta Tiaharisson Junior",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 168,
+      "nom": "Kos Chimelle Awa",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 169,
+      "nom": "Ngoummege Fetue Poupon",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 170,
+      "nom": "Ngouana Mbenda Franchinel",
+      "prenom": "Aron Dut - Gi - S"
+    },
+    {
+      "id": 171,
+      "nom": "Kouam Wakam Steve",
+      "prenom": "Landry Dut - Gi - S"
+    },
+    {
+      "id": 172,
+      "nom": "Takoutchou Mafo Merveille",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 173,
+      "nom": "Mako Zouha Minoslone",
+      "prenom": "Dut - Gi - S"
+    },
+    {
+      "id": 174,
+      "nom": "Tamokoue Kuate Fabrice",
+      "prenom": "Dut - Gi - S Fabricetamokoue Gmai Com"
+    },
+    {
+      "id": 175,
+      "nom": "Mahound Mvom Claude",
+      "prenom": "Stephane Dut - Gi - S"
+    },
+    {
+      "id": 176,
+      "nom": "Waffo Tagniraphaël Ronaldo",
+      "prenom": "Dut - Gi - S"
+    }
+  ]
+}
