@@ -180,7 +180,13 @@
                             <span class="nav-icon">💬</span>
                             <span class="nav-label">Modérer Chats</span>
                         </a>
-                    </li>     
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin_matches') }}" class="{% if request.endpoint == 'admin_matches' %}active{% endif %}">
+                            <span class="nav-icon">🎯</span>
+                            <span class="nav-label">Gérer Matchs</span>
+                        </a>
+                    </li>
                 {% endif %}
                 <li>
                     <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">

@@ -311,6 +311,10 @@ def logout():
 
 # ---------- New chat system socket handlers and APIs ----------
 
+# Real-time forum send/join handlers removed — forum messages are now posted via a regular POST endpoint (no Socket.IO).
+
+# ---------- New chat system socket handlers and APIs ----------
+
 # create_chat handler removed — chat feature is disabled.
 
 @socketio.on('connect', namespace='/notifications')
@@ -620,6 +624,8 @@ def admin_delete_message(message_id):
     conn.commit()
     conn.close()
     return jsonify({'ok': True})
+
+
 
 # API: search users for autocomplete (by nom/prenom)
 @app.route('/api/users/search')
