@@ -70,6 +70,7 @@
 <script>
 const socket = io('/chat');
 let currentChat = null;
+// @ts-ignore
 const SESSION_USER_ID = {{ session.get('user_id') | tojson }};
 let selectedUsers = [];
 let selectedFiles = [];

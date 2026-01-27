@@ -7,49 +7,18 @@ import openai
 from werkzeug.utils import secure_filename
 from functools import wraps
 import os
-import re
 from datetime import datetime
 from flask_mail import Mail, Message
 
 app = Flask(__name__)
-# Use environment variables for sensitive keys in production
-app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret')  # set FLASK_SECRET_KEY in production
-# OpenAI API key from environment (do NOT store secrets in the repo)
-app.config['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 socketio = SocketIO(app)
 
 # --- Configuration upload ---
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# Limit upload size to 15 MB
-app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
-ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'zip', 'rar', 'jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# OpenAI key retrieval helper (supports env var, app config, or module-level constant)
-def get_openai_api_key():
-    # Priority: app.config > module-level OPENAI_API_KEY > environment > openai.api_key
-    key = None
-    try:
-        key = app.config.get('OPENAI_API_KEY')
-    except Exception:
-        key = None
-    if not key:
-        key = globals().get('OPENAI_API_KEY')
-    if not key:
-        key = os.getenv('OPENAI_API_KEY')
-    if not key:
-        key = getattr(openai, 'api_key', None)
-    return key
-
-# Informational message at startup (no secret displayed)
-if get_openai_api_key():
-    print('OpenAI key: configured (source: env/app config/constant)')
-else:
-    print('OpenAI key: NOT configured; assistant endpoints will return an explanatory error')
+ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'zip', 'rar', 'jpg', 'jpeg', 'png'}
 
 # --- Connexion à la base de données ---
 
@@ -57,192 +26,6 @@ def get_db_connection():
     conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), 'database', 'iut_courses.db'))
     conn.row_factory = sqlite3.Row
     return conn
-
-# Ensure required DB schema exists (adds columns/tables when missing)
-def ensure_db_schema():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # Add image column to questions table if missing
-    try:
-        cur.execute("PRAGMA table_info(questions)")
-        cols = [r[1] for r in cur.fetchall()]
-        if 'image' not in cols:
-            try:
-                cur.execute("ALTER TABLE questions ADD COLUMN image TEXT")
-            except Exception:
-                pass
-        # add answer_type column for response size/type
-        if 'answer_type' not in cols:
-            try:
-                cur.execute("ALTER TABLE questions ADD COLUMN answer_type TEXT DEFAULT 'short'")
-            except Exception:
-                pass
-    except Exception:
-        pass
-
-    # Create exam-related tables if they don't exist
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS examens (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            unite_id INTEGER,
-            titre TEXT NOT NULL,
-            date_debut DATETIME,
-            duree INTEGER
-        )
-    """)
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS questions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            exam_id INTEGER,
-            question TEXT NOT NULL,
-            reponse_correcte TEXT,
-            image TEXT
-        )
-    """)
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS resultats_exam (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            exam_id INTEGER,
-            user_id INTEGER,
-            score INTEGER,
-            score_percentage REAL DEFAULT 0,
-            responses TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    # Forum messages
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS forum_messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            unite_id INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            content TEXT NOT NULL,
-            share_whatsapp INTEGER DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    # Chat system tables (idempotent creation)
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS chats (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            owner_id INTEGER,
-            is_forum INTEGER DEFAULT 0,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    # Ensure columns exist for older DBs (ALTER TABLE ADD COLUMN is noop if column exists)
-    try:
-        cur.execute("PRAGMA table_info(chats)")
-        cols = [r[1] for r in cur.fetchall()]
-        if 'owner_id' not in cols:
-            try:
-                cur.execute("ALTER TABLE chats ADD COLUMN owner_id INTEGER")
-            except Exception:
-                pass
-        if 'is_forum' not in cols:
-            try:
-                cur.execute("ALTER TABLE chats ADD COLUMN is_forum INTEGER DEFAULT 0")
-            except Exception:
-                pass
-        if 'created_at' not in cols:
-            try:
-                cur.execute("ALTER TABLE chats ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP")
-            except Exception:
-                pass
-    except Exception:
-        pass
-    # Create index safely (older DBs may lack column until ALTER above is applied)
-    try:
-        cur.execute("CREATE INDEX IF NOT EXISTS idx_chats_owner ON chats(owner_id)")
-    except Exception:
-        pass
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS chat_participants (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            chat_id INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            role TEXT DEFAULT 'member',
-            added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(chat_id) REFERENCES chats(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )
-    """)
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_chat_participants_chat ON chat_participants(chat_id)")
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_chat_participants_user ON chat_participants(user_id)")
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            chat_id INTEGER NOT NULL,
-            user_id INTEGER NOT NULL,
-            content TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            deleted INTEGER DEFAULT 0,
-            FOREIGN KEY(chat_id) REFERENCES chats(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
-        )
-    """)
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_messages_chat_created ON messages(chat_id, created_at)")
-
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS attachments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            message_id INTEGER NOT NULL,
-            filename TEXT NOT NULL,
-            original_name TEXT,
-            mime TEXT,
-            size INTEGER,
-            uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(message_id) REFERENCES messages(id)
-        )
-    """)
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_attachments_message ON attachments(message_id)")
-
-    # Purge messages older than 7 days on startup (one-off maintenance)
-    try:
-        cur.execute("DELETE FROM messages WHERE created_at <= DATETIME('now','-7 days')")
-    except Exception:
-        pass
-
-
-    # Formations table
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS formations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            titre TEXT NOT NULL,
-            description TEXT,
-            categorie TEXT,
-            filename TEXT NOT NULL,
-            uploaded_by INTEGER,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    # Table to track currently connected users (presence)
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS online_users (
-            user_id INTEGER PRIMARY KEY,
-            connected_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-
-    conn.commit()
-    conn.close()
-
-# Call schema ensure on startup
-ensure_db_schema()
-
-# Expose openai key presence to templates
-@app.context_processor
-def inject_admin_status():
-    return {'openai_key_configured': bool(get_openai_api_key())}
-
 # --- Droits admin ---
 ADMIN_EMAIL = "giannyfoapa@gmail.com"
 
@@ -307,367 +90,41 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
-# Real-time forum send/join handlers removed — forum messages are now posted via a regular POST endpoint (no Socket.IO).
-
-# ---------- New chat system socket handlers and APIs ----------
-
-# Real-time forum send/join handlers removed — forum messages are now posted via a regular POST endpoint (no Socket.IO).
-
-# ---------- New chat system socket handlers and APIs ----------
-
-# create_chat handler removed — chat feature is disabled.
-
-@socketio.on('connect', namespace='/notifications')
-def notifications_connect():
-    # join the personal room so admin or other services can send targeted notifications
-    if 'user_id' in session:
-        uid = session['user_id']
-        join_room(f'user_{uid}')
-        try:
-            conn = get_db_connection()
-            cur = conn.cursor()
-            # insert or replace presence for this user
-            cur.execute("INSERT OR REPLACE INTO online_users (user_id, connected_at) VALUES (?, CURRENT_TIMESTAMP)", (uid,))
-            conn.commit()
-        except Exception as e:
-            print('Presence insert error:', e)
-        finally:
-            try:
-                conn.close()
-            except Exception:
-                pass
-
-@socketio.on('disconnect', namespace='/notifications')
-def notifications_disconnect():
-    # remove presence on disconnect
-    if 'user_id' in session:
-        try:
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute("DELETE FROM online_users WHERE user_id=?", (session['user_id'],))
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print('Presence remove error:', e)
-
-# ----- Chat endpoints & Socket.IO handlers -----
-
-@app.route('/chats')
-def list_chats():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    return render_template('chats.html')
-
-@app.route('/api/chats')
-def api_chats():
-    # Return chats the user participates in (owner or member)
-    if 'user_id' not in session:
-        return jsonify([])
-    uid = session['user_id']
-    conn = get_db_connection()
-    try:
-        rows = conn.execute("""
-            SELECT c.id, c.title, c.owner_id, c.created_at, (
-                SELECT COUNT(*) FROM chat_participants cp WHERE cp.chat_id=c.id
-            ) as participants_count,
-            (SELECT content FROM messages m WHERE m.chat_id=c.id ORDER BY m.created_at DESC LIMIT 1) as last_message,
-            (SELECT created_at FROM messages m WHERE m.chat_id=c.id ORDER BY m.created_at DESC LIMIT 1) as last_message_at
-            FROM chats c
-            JOIN chat_participants cp ON cp.chat_id=c.id
-            WHERE cp.user_id=?
-            ORDER BY last_message_at DESC, c.created_at DESC
-        """, (uid,)).fetchall()
-        out = []
-        for r in rows:
-            out.append({'id': r['id'], 'title': r['title'], 'owner_id': r['owner_id'], 'participants': r['participants_count'], 'last_message': r['last_message'], 'last_message_at': r['last_message_at']})
-        return jsonify(out)
-    finally:
-        conn.close()
-
-@app.route('/chat/create', methods=['POST'])
-def create_chat():
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Authentication required'}), 403
-    title = request.form.get('title', '').strip() or None
-    participants = request.form.get('participants')
-    if participants:
-        try:
-            participants = [int(x) for x in participants.split(',') if x.strip()]
-        except Exception:
-            participants = []
-    else:
-        participants = []
-    uid = session['user_id']
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('INSERT INTO chats (title, owner_id) VALUES (?,?)', (title, uid))
-    chat_id = cur.lastrowid
-    # add owner as participant with role owner
-    cur.execute('INSERT INTO chat_participants (chat_id, user_id, role) VALUES (?,?,?)', (chat_id, uid, 'owner'))
-    for p in participants:
-        if p == uid: continue
-        try:
-            cur.execute('INSERT INTO chat_participants (chat_id, user_id, role) VALUES (?,?,?)', (chat_id, p, 'member'))
-            # notify participants about invite
-            try:
-                inviter = conn.execute('SELECT nom, prenom FROM users WHERE id=?', (uid,)).fetchone()
-                inviter_name = (inviter['nom'] + ' ' + (inviter['prenom'] or '')).strip() if inviter else 'Quelqu\'un'
-            except Exception:
-                inviter_name = 'Quelqu\'un'
-            socketio.emit('chat_invite', {'chat_id': chat_id, 'from_id': uid, 'from_name': inviter_name, 'chat_title': title}, namespace='/notifications', room=f'user_{p}')
-        except Exception:
-            pass
-    conn.commit()
-    conn.close()
-    return jsonify({'ok': True, 'chat_id': chat_id})
-
-@app.route('/chat/<int:chat_id>/add_participant', methods=['POST'])
-def chat_add_participant(chat_id):
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Authentication required'}), 403
-    uid = session['user_id']
-    user_to_add = int(request.form.get('user_id'))
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # only owner or admin can add
-    row = cur.execute('SELECT role FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, uid)).fetchone()
-    if not row or row['role'] not in ('owner', 'admin'):
-        conn.close()
-        return jsonify({'ok': False, 'error': 'Not authorized'}), 403
-    cur.execute('INSERT INTO chat_participants (chat_id, user_id, role) VALUES (?,?,?)', (chat_id, user_to_add, 'member'))
-    conn.commit()
-    # notify the new participant with inviter name and chat title
-    try:
-        inviter = cur.execute('SELECT nom, prenom FROM users WHERE id=?', (uid,)).fetchone()
-        inviter_name = (inviter['nom'] + ' ' + (inviter['prenom'] or '')).strip() if inviter else 'Quelqu\'un'
-        # fetch chat title
-        chat_row = cur.execute('SELECT title FROM chats WHERE id=?', (chat_id,)).fetchone()
-        chat_title = chat_row['title'] if chat_row and 'title' in chat_row.keys() else None
-        socketio.emit('chat_invite', {'chat_id': chat_id, 'from_id': uid, 'from_name': inviter_name, 'chat_title': chat_title}, namespace='/notifications', room=f'user_{user_to_add}')
-    except Exception:
-        pass
-    conn.close()
-    return jsonify({'ok': True})
-
-@app.route('/chat/<int:chat_id>/remove_participant', methods=['POST'])
-def chat_remove_participant(chat_id):
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Authentication required'}), 403
-    uid = session['user_id']
-    user_to_remove = int(request.form.get('user_id'))
-    conn = get_db_connection()
-    cur = conn.cursor()
-    row = cur.execute('SELECT role FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, uid)).fetchone()
-    if not row or row['role'] not in ('owner', 'admin'):
-        conn.close()
-        return jsonify({'ok': False, 'error': 'Not authorized'}), 403
-    cur.execute('DELETE FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, user_to_remove))
-    conn.commit()
-    conn.close()
-    return jsonify({'ok': True})
-
-@app.route('/chat/messages/<int:chat_id>')
-def chat_messages(chat_id):
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Authentication required'}), 403
-    uid = session['user_id']
-    conn = get_db_connection()
-    # check participant
-    part = conn.execute('SELECT id FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, uid)).fetchone()
-    if not part:
-        conn.close()
-        return jsonify({'ok': False, 'error': 'Not a participant'}), 403
-    rows = conn.execute('SELECT m.*, u.nom, u.prenom FROM messages m JOIN users u ON u.id=m.user_id WHERE m.chat_id=? AND m.deleted=0 ORDER BY m.created_at DESC LIMIT 200', (chat_id,)).fetchall()
-    res = []
-    for r in rows:
-        res.append({'id': r['id'], 'user_id': r['user_id'], 'username': (r['nom'] + ' ' + (r['prenom'] or '')).strip(), 'content': r['content'], 'created_at': r['created_at']})
-    conn.close()
-    return jsonify({'ok': True, 'messages': list(reversed(res))})
-
-@app.route('/chat/message', methods=['POST'])
-def chat_message_post():
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Authentication required'}), 403
-    uid = session['user_id']
-    chat_id = int(request.form.get('chat_id'))
-    content = request.form.get('content', '').strip()
-    if not content and not request.files.getlist('file'):
-        return jsonify({'ok': False, 'error': 'Empty message'}), 400
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # check participant
-    part = cur.execute('SELECT role FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, uid)).fetchone()
-    if not part:
-        conn.close()
-        return jsonify({'ok': False, 'error': 'Not a participant'}), 403
-    cur.execute('INSERT INTO messages (chat_id, user_id, content) VALUES (?,?,?)', (chat_id, uid, content))
-    msg_id = cur.lastrowid
-    files = []
-    # support multiple files
-    for f in request.files.getlist('file'):
-        if f and f.filename and allowed_file(f.filename):
-            fname = secure_filename(f.filename)
-            dest = os.path.join(app.config['UPLOAD_FOLDER'], f"chat_{msg_id}_" + fname)
-            f.save(dest)
-            cur.execute('INSERT INTO attachments (message_id, filename, original_name, mime, size) VALUES (?,?,?,?,?)', (msg_id, os.path.basename(dest), f.filename, f.mimetype or '', os.path.getsize(dest)))
-    conn.commit()
-    # emit via socket.io to room
-    try:
-        socketio.emit('new_message', {'chat_id': chat_id, 'message_id': msg_id, 'user_id': uid, 'content': content, 'created_at': datetime.now().isoformat()}, namespace='/chat', room=f'chat_{chat_id}')
-    except Exception:
-        pass
-    conn.close()
-    return jsonify({'ok': True, 'message_id': msg_id})
-
-# Socket.IO: join chat room
-@socketio.on('join_chat', namespace='/chat')
-def on_join_chat(data):
-    chat_id = data.get('chat_id')
-    if not chat_id or 'user_id' not in session:
-        return
-    uid = session['user_id']
-    conn = get_db_connection()
-    part = conn.execute('SELECT id FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, uid)).fetchone()
-    conn.close()
-    if not part:
-        return
-    join_room(f'chat_{chat_id}')
-
-# Socket.IO: send message (alternative real-time path)
 @socketio.on('send_message', namespace='/chat')
-def on_send_message(data):
-    chat_id = data.get('chat_id')
-    content = data.get('content', '')
-    if 'user_id' not in session:
+def on_message(data):
+    if "user_id" not in session:
         return
-    uid = session['user_id']
-    if not content.strip():
-        return
-    conn = get_db_connection()
-    cur = conn.cursor()
-    part = cur.execute('SELECT id FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, uid)).fetchone()
-    if not part:
-        conn.close()
-        return
-    cur.execute('INSERT INTO messages (chat_id, user_id, content) VALUES (?,?,?)', (chat_id, uid, content))
-    msg_id = cur.lastrowid
-    conn.commit()
-    conn.close()
-    emit('new_message', {'chat_id': chat_id, 'message_id': msg_id, 'user_id': uid, 'content': content, 'created_at': datetime.now().isoformat()}, room=f'chat_{chat_id}', namespace='/chat')
-
-# --- Admin moderation endpoints for chats/messages ---
-@app.route('/admin/api/chats')
-@admin_required
-def admin_api_chats():
-    conn = get_db_connection()
+        
+    unite_id = data['unite_id']
+    content = data['content']
+    share_to_whatsapp = data.get('shareToWhatsApp', False)
+    
     try:
-        rows = conn.execute('SELECT c.*, (SELECT COUNT(*) FROM chat_participants cp WHERE cp.chat_id=c.id) as participants FROM chats c ORDER BY c.created_at DESC').fetchall()
-        return jsonify([dict(r) for r in rows])
-    finally:
-        conn.close()
-
-@app.route('/admin/api/chat/<int:chat_id>/participants')
-@admin_required
-def admin_chat_participants(chat_id):
-    conn = get_db_connection()
-    try:
-        rows = conn.execute('SELECT u.id, (u.nom || " " || IFNULL(u.prenom,"") ) as name FROM chat_participants cp JOIN users u ON u.id=cp.user_id WHERE cp.chat_id=?', (chat_id,)).fetchall()
-        return jsonify([{'id': r['id'], 'name': r['name']} for r in rows])
-    finally:
-        conn.close()
-
-@app.route('/admin/chat/<int:chat_id>/delete', methods=['POST'])
-@admin_required
-def admin_delete_chat(chat_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # delete attachments files
-    atts = cur.execute('SELECT filename FROM attachments WHERE message_id IN (SELECT id FROM messages WHERE chat_id=?)', (chat_id,)).fetchall()
-    for a in atts:
-        try:
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], a['filename']))
-        except Exception:
-            pass
-    cur.execute('DELETE FROM attachments WHERE message_id IN (SELECT id FROM messages WHERE chat_id=?)', (chat_id,))
-    cur.execute('DELETE FROM messages WHERE chat_id=?', (chat_id,))
-    cur.execute('DELETE FROM chat_participants WHERE chat_id=?', (chat_id,))
-    cur.execute('DELETE FROM chats WHERE id=?', (chat_id,))
-    conn.commit()
-    conn.close()
-    return jsonify({'ok': True})
-
-@app.route('/admin/chat/<int:chat_id>/remove_participant', methods=['POST'])
-@admin_required
-def admin_remove_participant(chat_id):
-    user_id = int(request.form.get('user_id'))
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('DELETE FROM chat_participants WHERE chat_id=? AND user_id=?', (chat_id, user_id))
-    conn.commit()
-    conn.close()
-    return jsonify({'ok': True})
-
-@app.route('/admin/message/<int:message_id>/delete', methods=['POST'])
-@admin_required
-def admin_delete_message(message_id):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # remove attachments files
-    atts = cur.execute('SELECT filename FROM attachments WHERE message_id=?', (message_id,)).fetchall()
-    for a in atts:
-        try:
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], a['filename']))
-        except Exception:
-            pass
-    cur.execute('DELETE FROM attachments WHERE message_id=?', (message_id,))
-    cur.execute('DELETE FROM messages WHERE id=?', (message_id,))
-    conn.commit()
-    conn.close()
-    return jsonify({'ok': True})
-
-
-
-# API: search users for autocomplete (by nom/prenom)
-@app.route('/api/users/search')
-def api_users_search():
-    q = request.args.get('q', '').strip()
-    conn = get_db_connection()
-    try:
-        if q == '':
-            rows = conn.execute("SELECT id, nom, prenom FROM users ORDER BY nom LIMIT 30").fetchall()
-        else:
-            like = f"%{q}%"
-            rows = conn.execute("SELECT id, nom, prenom FROM users WHERE nom LIKE ? OR prenom LIKE ? OR (nom || ' ' || IFNULL(prenom,'')) LIKE ? ORDER BY nom LIMIT 50", (like, like, like)).fetchall()
-        results = [{'id': r['id'], 'name': (r['nom'] + ' ' + (r['prenom'] or '')).strip()} for r in rows]
-        return jsonify(results)
-    finally:
-        conn.close()
-
-# API: list currently online users
-@app.route('/api/online_users')
-def api_online_users():
-    conn = get_db_connection()
-    try:
-        rows = conn.execute("SELECT ou.user_id, u.nom, u.prenom, ou.connected_at FROM online_users ou JOIN users u ON u.id=ou.user_id ORDER BY ou.connected_at DESC").fetchall()
-        return jsonify([{'id': r['user_id'], 'name': (r['nom'] + ' ' + (r['prenom'] or '')).strip(), 'connected_at': r['connected_at']} for r in rows])
-    finally:
-        conn.close()
-    cur = conn.cursor()
-    # create invite with status 'requested'
-    cur.execute('INSERT INTO chat_invites (chat_id, from_user, to_user, status) VALUES (?, ?, ?, ?)', (chat_id, session['user_id'], None, 'requested'))
-    conn.commit()
-    conn.close()
-    # notify chat owners (simple implementation: notify all members with role owner)
-    try:
-        # fetch owners
         conn = get_db_connection()
-        owners = conn.execute('SELECT user_id FROM chat_members WHERE chat_id=? AND role="owner"', (chat_id,)).fetchall()
+        # Enregistrer le message
+        conn.execute("""
+            INSERT INTO forum_messages (unite_id, user_id, content)
+            VALUES (?, ?, ?)
+        """, (unite_id, session["user_id"], content))
+        conn.commit()
+        
+        # Récupérer les informations de l'utilisateur
+        user = conn.execute("SELECT nom FROM users WHERE id = ?", 
+                        (session["user_id"],)).fetchone()
+        
+        # Émettre le message à tous les utilisateurs dans la salle
+        emit('message', {
+            'content': content,
+            'username': user['nom'],
+            'user_id': session["user_id"],
+            'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'shareToWhatsApp': share_to_whatsapp
+        }, room=f"unite_{unite_id}")
+        
+    except Exception as e:
+        print(f"Erreur lors de l'envoi du message : {str(e)}")
+    finally:
         conn.close()
-        for owner in owners:
-            socketio.emit('chat_join_request', {'chat_id': chat_id, 'from_user': session['user_id']}, namespace='/notifications', room=f'user_{owner["user_id"]}')
-    except Exception:
-        pass
-    return jsonify({'ok': True})
 
 # --- Assistant IA par unité (placeholder) ---
 @app.route("/assistant/unit/<int:unite_id>")
@@ -683,54 +140,26 @@ def assistant_unit(unite_id):
     if request.method == "POST":
         question = request.form.get("question")
     if question:
-        key = get_openai_api_key()
-        if not key:
-            response = "<span style='color:#c00;font-weight:bold'>Clé OpenAI non configurée. Veuillez définir la variable d'environnement OPENAI_API_KEY ou `app.config['OPENAI_API_KEY']`.</span>"
-        else:
-            try:
-                openai.api_key = key
-                client = openai.OpenAI(api_key=openai.api_key)
-                chat_completion = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": f"Tu es un assistant pédagogique pour l'unité : {unite['nom']} du programme Génie Informatique."},
-                        {"role": "user", "content": question}
-                    ]
-                )
-                response = chat_completion.choices[0].message.content
-            except Exception as e:
-                err_str = str(e).lower()
-                if 'insufficient_quota' in err_str or 'quota' in err_str:
-                    response = "<span style='color:#c00;font-weight:bold'>Limite atteinte : Veuillez passer au mode premium pour continuer à utiliser l'assistant IA.</span>"
-                elif 'invalid_api_key' in err_str or 'incorrect api key' in err_str:
-                    response = "<span style='color:#c00;font-weight:bold'>Clé API OpenAI invalide : Veuillez contacter l'administrateur ou passer au mode premium.</span>"
-                else:
-                    response = f"Erreur lors de la réponse de l'IA : {e}"
+        try:
+            openai.api_key = "VOTRE_CLE_OPENAI"  # Remplacez par votre clé OpenAI
+            client = openai.OpenAI(api_key=openai.api_key)
+            chat_completion = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": f"Tu es un assistant pédagogique pour l'unité : {unite['nom']} du programme Génie Informatique."},
+                    {"role": "user", "content": question}
+                ]
+            )
+            response = chat_completion.choices[0].message.content
+        except Exception as e:
+            err_str = str(e).lower()
+            if 'insufficient_quota' in err_str or 'quota' in err_str:
+                response = "<span style='color:#c00;font-weight:bold'>Limite atteinte : Veuillez passer au mode premium pour continuer à utiliser l'assistant IA.</span>"
+            elif 'invalid_api_key' in err_str or 'incorrect api key' in err_str:
+                response = "<span style='color:#c00;font-weight:bold'>Clé API OpenAI invalide : Veuillez contacter l'administrateur ou passer au mode premium.</span>"
+            else:
+                response = f"Erreur lors de la réponse de l'IA : {e}"
     return render_template("assistant_unit.html", unite=unite, response=response, question=question)
-
-# Lightweight assistant API for floating assistant
-@app.route('/assistant/chat', methods=['POST'])
-def assistant_chat_api():
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Not authenticated'})
-    payload = request.get_json() or {}
-    question = payload.get('question', '')
-    unite_id = payload.get('unite_id')
-    try:
-        key = get_openai_api_key()
-        if not key:
-            return jsonify({'ok': False, 'error': 'OpenAI key not configured. Définissez OPENAI_API_KEY dans l\'environnement ou `app.config["OPENAI_API_KEY"]`.'})
-        openai.api_key = key
-        client = openai.OpenAI(api_key=openai.api_key)
-        prompt = f"You are a helpful study assistant. Answer concisely: {question}"
-        comp = client.chat.completions.create(
-            model='gpt-3.5-turbo',
-            messages=[{'role':'system','content':'You are a helpful study assistant.'},{'role':'user','content':prompt}]
-        )
-        resp = comp.choices[0].message.content
-        return jsonify({'ok': True, 'response': resp})
-    except Exception as e:
-        return jsonify({'ok': False, 'error': str(e)})
 
 # --- Login ---
 @app.route("/login", methods=["GET", "POST"])
@@ -767,7 +196,7 @@ def register():
         conn = get_db_connection()
         try:
             conn.execute(
-                "INSERT INTO users (nom, prenom, matricule, email, password, role, filiere) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO users (nom, prenom, matricule, email, password, role, filiere, has_paid) VALUES (?, ?, ?, ?, ?, ?, ?, 1)",
                 (nom, prenom, matricule, email, password, "student", filiere)
             )
             conn.commit()
@@ -821,13 +250,6 @@ def admin_posts():
     conn.close()
     return render_template("admin_posts.html", posts=posts)
 
-
-@app.route('/admin/chats')
-@admin_required
-def admin_chats():
-    # Render the admin chat moderation interface
-    return render_template('admin_chats.html')
-
 # --- Page d'actualité GI2 ---
 @app.route("/gi2-news")
 def gi2_news():
@@ -864,16 +286,9 @@ def courses():
         return redirect(url_for("login"))
     conn = get_db_connection()
     user = conn.execute("SELECT * FROM users WHERE id=?", (session["user_id"],)).fetchone()
-    if not is_admin() and (not user or not user['has_paid']):
-        if user and user['pending_payment']:
-            conn.close()
-            return render_template("pay.html", message="Votre paiement est en attente de validation par l'administrateur. Vous recevrez un accès dès confirmation.", waiting=True)
-        conn.close()
-        return redirect(url_for("pay"))
     filiere = user["filiere"] if user else None
     semestres = []
-    # Show semestres/units to admins regardless of their filiere, otherwise only show if filiere matches GI
-    if is_admin() or (filiere and filiere.lower() in ["genie informatique", "informatique", "gin", "gi"]):
+    if filiere and filiere.lower() in ["genie informatique", "informatique", "gin", "gi"]:
         sem_rows = conn.execute("SELECT * FROM semestres ORDER BY id").fetchall()
         for sem in sem_rows:
             unites = conn.execute("SELECT * FROM unites WHERE semestre_id=? ORDER BY id", (sem["id"],)).fetchall()
@@ -983,7 +398,7 @@ def profile():
     conn.close()
     return render_template("profile.html", user=user)
 # --- Upload de documents pour une unité ---
-def allowed_doc_file(filename):
+def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/upload/<int:unite_id>', methods=['POST'])
@@ -997,7 +412,7 @@ def upload_file(unite_id):
     file = request.files['file']
     if file.filename == '':
         return redirect(url_for('courses'))
-    if file and allowed_doc_file(file.filename):
+    if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(save_path)
@@ -1051,8 +466,6 @@ def take_exam(exam_id):
             score = 0
             responses = []
             total_questions = 0
-            ask_ia = request.form.get('ask_ia')
-            share_whatsapp = True if request.form.get('share_whatsapp') else False
             
             for q in request.form:
                 if q.startswith('q_'):
@@ -1066,7 +479,7 @@ def take_exam(exam_id):
                     ).fetchone()
                     question = dict(question_row) if question_row else {"question": "", "reponse_correcte": ""}
                     
-                    is_correct = reponse.strip().lower() == (question['reponse_correcte'] or '').strip().lower()
+                    is_correct = reponse.lower() == (question['reponse_correcte'] or '').lower()
                     responses.append({
                         "question": question['question'],
                         "reponse": reponse,
@@ -1084,45 +497,21 @@ def take_exam(exam_id):
             try:
                 conn.execute("""
                     INSERT INTO resultats_exam 
-                    (exam_id, user_id, score, score_percentage, responses) 
-                    VALUES (?, ?, ?, ?, ?)
-                """, (exam_id, session["user_id"], score, score_percentage, str(responses)))
+                    (exam_id, user_id, score, score_percentage) 
+                    VALUES (?, ?, ?, ?)
+                """, (exam_id, session["user_id"], score, score_percentage))
                 conn.commit()
             except Exception as e:
                 conn.rollback()
                 raise e
-
-            ai_feedback = None
-            # If IA requested, ask OpenAI to evaluate answers
-            if ask_ia:
-                key = get_openai_api_key()
-                if not key:
-                    ai_feedback = ["AI non configurée (clé OPENAI_API_KEY manquante)."]
-                else:
-                    try:
-                        openai.api_key = key
-                        prompt = "You are an educational assistant. For each question and student's answer, give a short feedback (1-2 lines) whether correct and a brief comment. Use the format: 1) feedback line.\n" 
-                        for i, r in enumerate(responses, start=1):
-                            prompt += f"Question {i}: {r['question']}\nAnswer: {r['reponse']}\n\n"
-                        client = openai.OpenAI(api_key=openai.api_key)
-                        comp = client.chat.completions.create(
-                            model="gpt-3.5-turbo",
-                            messages=[{"role":"system","content":"You are a helpful grading assistant."}, {"role":"user","content":prompt}]
-                        )
-                        raw = comp.choices[0].message.content
-                        ai_feedback = [line.strip() for line in raw.splitlines() if line.strip()]
-                    except Exception as e:
-                        ai_feedback = [f"Erreur IA: {str(e)}"]
-
+            
             # If AJAX request
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({
                     "score": score,
                     "total": total_questions,
                     "percentage": score_percentage,
-                    "responses": responses,
-                    "ai_feedback": ai_feedback,
-                    "share_whatsapp": share_whatsapp
+                    "responses": responses
                 })
             
             return redirect(url_for("exams"))
@@ -1161,30 +550,15 @@ def admin_exams():
         
         exam_id = cursor.lastrowid
         
-        # Insérer les questions (gestion des images et du type de réponse)
+        # Insérer les questions
         questions = request.form.getlist("questions[]")
         reponses = request.form.getlist("reponses[]")
-        answer_types = request.form.getlist("answer_type[]")
-        images = request.files.getlist("question_image[]")
         
-        # normaliser la longueur
-        maxlen = max(len(questions), len(reponses), len(answer_types), len(images))
-        for i in range(maxlen):
-            q = questions[i] if i < len(questions) else ''
-            r = reponses[i] if i < len(reponses) else None
-            at = answer_types[i] if i < len(answer_types) else 'short'
-            img_file = images[i] if i < len(images) else None
-            img_filename = None
-            if img_file and hasattr(img_file, 'filename') and img_file.filename:
-                filename = secure_filename(img_file.filename)
-                # avoid name collision
-                save_name = f"{int(datetime.now().timestamp())}_{filename}"
-                img_file.save(os.path.join(app.config['UPLOAD_FOLDER'], save_name))
-                img_filename = save_name
+        for q, r in zip(questions, reponses):
             conn.execute("""
-                INSERT INTO questions (exam_id, question, reponse_correcte, image, answer_type)
-                VALUES (?, ?, ?, ?, ?)
-            """, (exam_id, q, r, img_filename, at))
+                INSERT INTO questions (exam_id, question, reponse_correcte)
+                VALUES (?, ?, ?)
+            """, (exam_id, q, r))
         
         conn.commit()
         return redirect(url_for("admin_exams"))
@@ -1225,15 +599,49 @@ def admin_exams_delete(exam_id):
         conn.close()
     return redirect(url_for("admin_exams"))
 
-# Admin chat moderation routes removed because the chat feature is disabled per request.
-# Admin pages and endpoints related to chats were removed to avoid confusion.
-
-# Route pour afficher la page Fondateur
-@app.route('/fondateur')
-def fondateur():
-    return render_template('Fondateur.html')
-
 # Supprimer l'ancienne route forum_unit si elle existe
+
+@app.route("/chats")
+def list_chats():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("chats.html")
+
+@app.route("/admin/chats")
+@admin_required
+def admin_chats():
+    return render_template("admin_chats.html")
+
+@app.route("/matches")
+@admin_required
+def admin_matches():
+    return render_template("admin_chats.html")
+
+@app.route("/fondateur")
+def fondateur():
+    return render_template("Fondateur.html")
+
+@app.route("/admin/api/chats", methods=["GET"])
+@admin_required
+def admin_api_chats():
+    # Retourner une liste vide pour maintenant
+    return jsonify([])
+
+@app.route("/admin/api/chat/<int:chat_id>/participants", methods=["GET"])
+@admin_required
+def admin_api_chat_participants(chat_id):
+    # Retourner une liste vide pour maintenant
+    return jsonify([])
+
+@app.route("/admin/chat/<int:chat_id>/delete", methods=["POST"])
+@admin_required
+def admin_chat_delete(chat_id):
+    return jsonify({"ok": True})
+
+@app.route("/admin/chat/<int:chat_id>/remove_participant", methods=["POST"])
+@admin_required
+def admin_chat_remove_participant(chat_id):
+    return jsonify({"ok": True})
 
 @app.route("/forum/unit/<int:unite_id>")
 def forum_unit(unite_id):
@@ -1273,31 +681,7 @@ def forum_unit(unite_id):
     )
 
 
-@app.route('/forum/unit/<int:unite_id>/message', methods=['POST'])
-def forum_post_message(unite_id):
-    if 'user_id' not in session:
-        return jsonify({'ok': False, 'error': 'Not authenticated'}), 401
-    data = request.get_json() or {}
-    content = (data.get('content') or '').strip()
-    share_whatsapp = bool(data.get('share_whatsapp'))
-    if not content:
-        return jsonify({'ok': False, 'error': 'Content required'})
-    conn = get_db_connection()
-    try:
-        cur = conn.cursor()
-        cur.execute("INSERT INTO forum_messages (unite_id, user_id, content, share_whatsapp) VALUES (?, ?, ?, ?)", (unite_id, session['user_id'], content, 1 if share_whatsapp else 0))
-        conn.commit()
-        msg_id = cur.lastrowid
-        user = conn.execute("SELECT nom FROM users WHERE id=?", (session['user_id'],)).fetchone()
-        username = user['nom'] if user else 'Anonyme'
-        created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        message = {'id': msg_id, 'user_id': session['user_id'], 'username': username, 'content': content, 'created_at': created_at, 'shareToWhatsApp': share_whatsapp}
-        return jsonify({'ok': True, 'message': message})
-    finally:
-        conn.close()
-
-
-def allowed_video_file(filename):
+def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in {'mp4', 'webm', 'ogg', 'mov', 'mkv'}
 
@@ -1339,7 +723,7 @@ def admin_formations():
         if not titre or not file:
             conn.close()
             return "Titre et fichier requis", 400
-        if not allowed_video_file(file.filename):
+        if not allowed_file(file.filename):
             conn.close()
             return "Format vidéo non autorisé", 400
 

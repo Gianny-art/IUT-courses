@@ -35,6 +35,7 @@
 
 <script>
     // Rendre les données de l'examen disponibles en JS
+    // @ts-ignore
     const examData = {{ exam | tojson }};
 
     document.getElementById('examForm').addEventListener('submit', async function(e) {

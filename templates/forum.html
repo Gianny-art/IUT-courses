@@ -22,7 +22,9 @@
 </div>
 
 <script>
+    // @ts-ignore
     const UNITE_ID = {{ unite_id | tojson }};
+    // @ts-ignore
     const SESSION_USER_ID = {{ session.get('user_id') | tojson }};
 
     async function sendMessage() {
